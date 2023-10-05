@@ -177,6 +177,7 @@ return [
         App\Providers\EventServiceProvider::class,
         App\Providers\RouteServiceProvider::class,
         // App\Validation\AllowNonRfcComplaintEmailPatchServiceProvider::class, //2022/09/13 Mail RFC
+        // Maatwebsite\Excel\ExcelServiceProvider::class,
     ],
 
     /*
@@ -230,7 +231,9 @@ return [
         'URL' => Illuminate\Support\Facades\URL::class,
         'Validator' => Illuminate\Support\Facades\Validator::class,
         'View' => Illuminate\Support\Facades\View::class,
-        'Helper' => App\Helper\Helper::class
+        'Helper' => App\Helper\Helper::class,
+        // 'Excel' => Maatwebsite\Excel\Facades\Excel::class
+
     ],
 
 ];
