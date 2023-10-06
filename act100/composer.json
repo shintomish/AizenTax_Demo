@@ -16,8 +16,7 @@
         "laravel/sanctum": "^3.0",
         "laravel/tinker": "^2.7",
         "laravel/ui": "^4.0",
-        "maatwebsite/excel": "*",
-        "phpoffice/phpexcel": "^1.8",
+        "maatwebsite/excel": "3.1.48",
         "pusher/pusher-php-server": "^7.2",
         "stechstudio/laravel-zipstream": "^4.8"
     },
