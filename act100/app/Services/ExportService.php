@@ -2,9 +2,11 @@
 
 namespace App\Services;
 
+use File;
 use PhpOffice\PhpSpreadsheet\Reader\Xlsx as XlsxReader;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx as XlsxWriter;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Storage;
 
 class ExportService
 {
@@ -33,18 +35,17 @@ class ExportService
 
         // Excel出力
         $writer     = new XlsxWriter($spreadsheet);
-        $excel_path = 'app/public/invoice/xls/'. $foloder_name. '/'. $file_name. '.xlsx';
-        $export_excel_path = storage_path($excel_path);
-        $writer->save($export_excel_path);
+        $excel_path = '/app/public/invoice/xls/'. $foloder_name. '/'. $file_name. '.xlsx';
 
+        // $export_excel_path = storage_path($excel_path);     'app/public'
+        $export_excel_path = storage_path() .$excel_path;   // '/app/public'
+        $writer->save($export_excel_path);
+ 
         // Pdf出力
         if (file_exists($export_excel_path)) {
             Log::info('ExportService makePdf Pdf出力 START');
 
             Log::debug('ExportService makePdf $export_excel_path = ' . $export_excel_path);
-
-            // // ExcelPathを変更
-            // $export_excel_path = './storage/app/public/invoice/xls/'. $foloder_name. '/'. $file_name. '.xlsx';
 
             // Excel -> Pdf
             $this->convertOfficeToPdf($file_name, $foloder_name, $export_excel_path);
@@ -61,13 +62,23 @@ class ExportService
 
         // putenv('HOME=/tmp'); // libreoffice の作業スペースとして tmp を使う
 
-        $pdf_dir = storage_path('app/public/invoice/pdf/'. $foloder_name);
-;
+        // $pdf_dir = storage_path('app/public/invoice/pdf/'. $foloder_name);
+        $pdf_dir = storage_path() . '/app/public/invoice/pdf/'. $foloder_name;
+
         #  /usr/bin/soffice --headless --convert-to pdf --outdir {出力先のディレクトリ} {変換する元のExcel}
         #  例) /tmp/sample.xls -> /tmp/sample.pdfに変換する場合
         #  /usr/bin/soffice --headless --convert-to pdf --outdir /tmp /tmp/sample.xls
         #  exec("export LANG=ja_JP.UTF-8 && /usr/bin/soffice --headless --convert-to pdf --outdir /tmp /tmp/sample.xls");
 
+        // $command_parts = [
+        //     'export HOME=/tmp;',
+        //     '/usr/bin/soffice',
+        //     '--language=ja',
+        //     '--headless',
+        //     '--convert-to pdf:writer_pdf_Export',
+        //     '--outdir '. $pdf_dir,
+        //     $office_path
+        // ];
         $command_parts = [
             'export HOME=/tmp;',
             '/usr/bin/soffice',
