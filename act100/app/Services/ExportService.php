@@ -2,12 +2,15 @@
 
 namespace App\Services;
 
+use App\Models\Billdata;
+
 use PhpOffice\PhpSpreadsheet\Reader\Xlsx as XlsxReader;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx as XlsxWriter;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 use Maatwebsite\Excel\Facades\Excel;
 
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 
 class ExportService
@@ -26,7 +29,8 @@ class ExportService
                         $to_company, 
                         $to_represent, 
                         $foloder_name, 
-                        $file_name
+                        $file_name,
+                        $customers_id
                         )
     {
         Log::info('ExportService makeXlsPdf START');
@@ -74,13 +78,16 @@ class ExportService
         $writer     = new XlsxWriter($spreadsheet);
         $writer->save($export_xls_path);
 
+        // billdatas更新
+        $this->billdataUpdate();
+
         // Pdf出力
         if (file_exists($export_xls_path)) {
 
             // Log::debug('ExportService makeXlsPdf $export_xls_path = ' . $export_xls_path);
 
             // ExcelファイルをPDFに変換するコード
-            $this->convertOfficeToPdf($file_name, $foloder_name, $export_xls_path);
+            $pdf_path = $this->convertOfficeToPdf($file_name, $foloder_name, $export_xls_path);
 
         }
 
@@ -96,7 +103,7 @@ class ExportService
         // putenv('HOME=/tmp'); // libreoffice の作業スペースとして tmp を使う
 
         $pdf_dir = storage_path('app/public/invoice/pdf/'.  $foloder_name);
-        Log::debug('ExportService convertOfficeToPdf exec $pdf_dir = '    .print_r($pdf_dir,true));
+        // Log::debug('ExportService convertOfficeToPdf exec $pdf_dir = '    .print_r($pdf_dir,true));
         // Log::debug('ExportService convertOfficeToPdf exec $foloder_name = '    .print_r($foloder_name,true));
         // $office_path = './storage/app/public/invoice/xls/'. $foloder_name. '/'. $file_name. '.xlsx';
 
@@ -126,8 +133,8 @@ class ExportService
         $command = implode(' ', $command_parts);
         exec($command, $output, $return_var);
 
-        Log::debug('ExportService convertOfficeToPdf exec $office_path = '    .print_r($office_path,true));
-        Log::debug('ExportService convertOfficeToPdf exec $return_var = ' .print_r($return_var,true));
+        // Log::debug('ExportService convertOfficeToPdf exec $office_path = '    .print_r($office_path,true));
+        Log::info('ExportService convertOfficeToPdf exec $return_var = ' .print_r($return_var,true));
 
         // $filename = pathinfo($office_path, PATHINFO_FILENAME);
         $pdf_path = $pdf_dir . '/' . $file_name . '.pdf';
@@ -136,4 +143,40 @@ class ExportService
 
         return file_exists($pdf_path) ? $pdf_path : null;
     }
+
+    public function billdataUpdate()
+    {
+        Log::info('ExportService  billdataUpdate START');
+
+        // try {
+        //     DB::beginTransaction();
+        //     Log::info('beginTransaction - ExportService  billdataUpdate saveFile start');
+
+        //     // $billdata = new Billdata();
+        //     // $billdata->filepath        = $filepath;
+        //     // $billdata->filename        = $fileName;
+        //     // $billdata->organization_id = 1;
+        //     // $billdata->extension_flg   = 1;
+        //     // $billdata->customer_id     = $customer_id;
+        //     // $billdata->filesize        = $fileSize;
+        //     // $billdata->urgent_flg      = 2;  // 1:既読 2:未読
+        //     // $billdata->save();               //  Inserts
+
+        //     DB::commit();
+        //     Log::info('beginTransaction - ExportService  billdataUpdate saveFile end(commit)');
+        // }
+        // catch(\QueryException $e) {
+        //     Log::error('exception : ' . $e->getMessage());
+        //     DB::rollback();
+        //     Log::info('beginTransaction - ExportService  billdataUpdate saveFile end(rollback)');
+        //     $errormsg = '更新出来ませんでした。';
+        //     return \Response::json(['error'=>$errormsg,'status'=>'NG'], 400);
+        // }
+
+        Log::info('ExportService  billdataUpdate END');
+
+        return \Response::json(['error'=>'更新処理が正常に終了しました。','status'=>'OK'], 200);
+
+    }
+
 }
