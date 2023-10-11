@@ -146,7 +146,8 @@ class ExcelMakeController extends Controller
                 $data['to_represent'], 
                 $data['foloder_name'],
                 $data['file_name'],
-                $data['customers_id']
+                $data['customers_id'],
+                $request
             );
         }
  
