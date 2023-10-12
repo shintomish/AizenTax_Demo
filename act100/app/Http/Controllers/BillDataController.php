@@ -78,18 +78,16 @@ class BillDataController extends Controller
         // 請求書データを取得
         if($organization_id == 0) {
             $billdatas = Billdata::where('organization_id','>=',$organization_id)
-                        ->where('customer_id','=',$customer_id)
                         ->whereNull('deleted_at')
                         ->orderBy('created_at', 'desc')
                         ->sortable()
-                        ->paginate(5);
+                        ->paginate(300);
         } else {
             $billdatas = Billdata::where('organization_id','=',$organization_id)
-                        ->where('customer_id','=',$customer_id)
                         ->whereNull('deleted_at')
                         ->orderBy('created_at', 'desc')
                         ->sortable()
-                        ->paginate(5);
+                        ->paginate(300);
         }
 
         $jsonfile = storage_path() . "/tmp/billdata_info_status_". $customer_id. ".json";
