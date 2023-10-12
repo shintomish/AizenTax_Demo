@@ -127,7 +127,7 @@
                     <th scope="col" class ="fixed01">送信ファイル名</th>
                     <th scope="col" class ="fixed01">ファイルサイズ</th>
                     <th scope="col" class ="fixed01">送信日</th>
-                    <th scope="col" class ="fixed01">xls/pdf</th>
+                    <th scope="col" class ="fixed01">操作</th>
                 </tr>
 
                 <tbody>
@@ -186,11 +186,10 @@
 
                                 {{-- xls/pdf --}}
                                 <td>
-                                    {{-- /'xls/pdf 1:xls 2:pdf'--}}
-                                    <select class="custom-select" id="contract_entity_{{$billdatas2->id}}" name="contract_entity_{{$billdatas2->id}}">
-                                        <option value="1" {{ $billdatas2->extension_flg == 1 ? 'selected' : '' }}>XLS</option>
-                                        <option value="2" {{ $billdatas2->extension_flg == 2 ? 'selected' : '' }}>PDF</option>
-                                    </select>
+                                    <div class="col-sm-2">
+                                        <button type="submit" class="btn btn-secondary btn-sm mr-auto">ダウンロード</button>
+                                    </div>
+           
                                 </td>
                             </tr>
                         @endforeach
@@ -198,7 +197,6 @@
                         <tr>
                             <td><p>0件です。</p></td>
                             <td><p> </p></td>
-                            {{-- <td><p> </p></td> --}}
                             <td><p> </p></td>
                             <td><p> </p></td>
                             <td><p> </p></td>

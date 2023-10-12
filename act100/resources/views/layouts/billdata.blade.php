@@ -322,14 +322,14 @@
                                 @break;
                             @case ('06')
                                 <!-- タイトル -->
-                                <h3>顧問料金編集</h3>
+                                <h3>請求書作成・アップロード</h3>
                                 <form  class="form-inline my-2 my-lg-0 ml-2" action="{{route('advisorsfee_custom')}}" method="GET">
                                 @break;
-                            @case ('06_1')
+                            {{-- @case ('06_1') --}}
                                 <!-- タイトル -->
-                                <h3>請求書データ送信確認ページ</h3>
-                                <form  class="form-inline my-2 my-lg-0 ml-2" action="{{route('billdata_custom')}}" method="GET">
-                                @break;
+                                {{-- <h3>請求書データ送信確認ページ</h3> --}}
+                                {{-- <form  class="form-inline my-2 my-lg-0 ml-2" action="{{route('billdata_custom')}}" method="GET"> --}}
+                                {{-- @break; --}}
                             @case ('06_2')
                                 <!-- タイトル -->
                                 <h3>請求書データ送信確認ページ</h3>
