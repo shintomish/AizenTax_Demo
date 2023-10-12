@@ -19,7 +19,20 @@ class ExportService
 {
     protected $proxies = "*";
 
-    // $export_service->makeXlsPdf($data['to_company'], $data['to_represent'] , $data['foloder_name'], $data['file_name']);
+    /**
+     *    makeXlsPdf()    : Excelを作成しPDFに変換
+     *    $tourokuno      : 登録番号
+     *    $tekiyou        : 摘要名
+     *    $furibi         : 振込日
+     *    $from_company   : 送り主会社名
+     *    $from_repres    : 送り主代表者名
+     *    $tanka          : 単価
+     *    $to_company     : 宛先会社名
+     *    $to_represent   : 宛先代表者名
+     *    $foloder_name   : フォルダー名
+     *    $file_name      : ファイル名
+     *    $customers_id   : 顧客ID
+     */
     public function makeXlsPdf(
                         $tourokuno,
                         $tekiyou,
@@ -32,8 +45,7 @@ class ExportService
                         $to_represent, 
                         $foloder_name, 
                         $file_name,
-                        $customers_id,
-                        $request
+                        $customers_id
                         )
     {
         Log::info('ExportService makeXlsPdf START');
@@ -111,6 +123,12 @@ class ExportService
     }
 
     // Local commandではうまく行くが実行すると出来ない SV=OK
+    /**
+     *    convertOfficeToPdf() : ExcelをPDFに変換
+     *    $file_name           : ファイル名
+     *    $foloder_name        : フォルダー名
+     *    $office_path         : Excelフルパス
+     */
     public function convertOfficeToPdf($file_name,$foloder_name, $office_path)
     {
         Log::info('ExportService convertOfficeToPdf START');
@@ -159,7 +177,7 @@ class ExportService
         return file_exists($pdf_path) ? $pdf_path : null;
     }
 
-    public function billdataUpdate($filepath,$fileName,$customer_id,$filesize,$extension_flg)
+    public function billdataUpdate($filepath, $fileName, $customers_id, $filesize, $extension_flg)
     {
         Log::info('ExportService  billdataUpdate START');
 
@@ -172,7 +190,7 @@ class ExportService
             $billdata->filename        = $fileName;
             $billdata->organization_id = 1;
             $billdata->extension_flg   = $extension_flg;
-            $billdata->customer_id     = $customer_id;
+            $billdata->customer_id     = $customers_id;
             $billdata->filesize        = $filesize;
             $billdata->urgent_flg      = 2;  // 1:既読 2:未読
             $billdata->save();               //  Inserts
