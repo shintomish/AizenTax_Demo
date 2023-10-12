@@ -92,7 +92,7 @@ Route::get('transserch',          'App\Http\Controllers\TransHistoryController@s
 // Route::get('transserch_custom',   'App\Http\Controllers\TransHistoryController@serch_custom')->name('transserch_custom');
 
 //-----------------------------------------------------------------------------------------------
-//- クライアント 請求書データ送信確認ページ
+//- クライアント 請求書データ送信確認ページ 2023/10/12
 //-----------------------------------------------------------------------------------------------
 Route::get('invoicehistory',             'App\Http\Controllers\InvoiceHistoryController@index')->name('invoicehistory');
 Route::get('invoicehistoryserch',        'App\Http\Controllers\InvoiceHistoryController@serch')->name('invoicehistoryserch');
@@ -208,7 +208,7 @@ Route::post('advisorsfee/update_api',  'App\Http\Controllers\AdvisorsfeeControll
 Route::resource('advisorsfee',         'App\Http\Controllers\AdvisorsfeeController');
 
 //-----------------------------------------------------------------------------------------------
-//- 事務所 請求書データ送信確認ページ 06_2
+//- 事務所 請求書データ送信確認ページ 06_2  2023/10/12
 //-----------------------------------------------------------------------------------------------
 Route::get('billdatahistory/index',        'App\Http\Controllers\BillDataController@index')->name('billdatahistory_in');
 Route::get('billdatahistory/custom',       'App\Http\Controllers\BillDataController@serch_custom')->name('billdata_custom');

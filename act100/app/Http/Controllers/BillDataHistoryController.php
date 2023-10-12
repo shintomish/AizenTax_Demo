@@ -68,6 +68,7 @@ class BillDataHistoryController extends Controller
         }
 
         $billdatas = Billdata::where('customer_id',$customer_id)
+                    ->where('extension_flg',2)
                     ->whereNull('deleted_at')
                     ->orderByRaw('created_at DESC')
                     ->sortable()
@@ -115,6 +116,7 @@ class BillDataHistoryController extends Controller
         if($keyword) {
             $billdatas = Billdata::where('customer_id',$customer_id)
                 ->whereNull('deleted_at')
+                ->where('extension_flg',2)
                 // ($keyword)日付の絞り込み
                 ->whereDate('created_at',$keyword)
                 ->orderByRaw('created_at DESC')
@@ -122,6 +124,7 @@ class BillDataHistoryController extends Controller
                 ->paginate(300);
         } else {
             $billdatas = Billdata::where('customer_id',$customer_id)
+                ->where('extension_flg',2)
                 ->whereNull('deleted_at')
                 ->orderByRaw('created_at DESC')
                 ->sortable()
@@ -177,12 +180,13 @@ class BillDataHistoryController extends Controller
             $billdatas = Billdata::where('customer_id',$customer_id)
                 ->whereNull('deleted_at')
                 // ($keyword)顧客の絞り込み
-                ->where('customer_id',$customer_id)
+                ->where('extension_flg',2)
                 ->orderByRaw('created_at DESC')
                 ->sortable()
                 ->paginate(300);
         } else {
             $billdatas = Billdata::whereNull('deleted_at')
+                ->where('extension_flg',2)
                 ->orderByRaw('created_at DESC')
                 ->sortable()
                 ->paginate(300);
