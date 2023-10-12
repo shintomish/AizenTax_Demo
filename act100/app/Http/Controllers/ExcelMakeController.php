@@ -67,9 +67,6 @@ class ExcelMakeController extends Controller
 
         Log::info('ExcelMakeController excel ret_query_count = ' .print_r($count,true));
 
-        // 選択クエリーオブジェクトを返す
-        $xls_inp_data = $this->advisorsGet($request,$organization_id,$nowyear,$nowmonth);
-
         // 配列初期化
         $work_data = array(
             'to_company'   => array(),
@@ -84,6 +81,10 @@ class ExcelMakeController extends Controller
         );
 
         $xls_out_data      = array();
+
+        // advisorsGet()    : 選択クエリーオブジェクトを取得
+        $xls_inp_data = $this->advisorsGet($organization_id,$nowyear,$nowmonth);
+
         $cnt = 1;
         foreach ($xls_inp_data as $xls_data2) {
 
@@ -173,32 +174,15 @@ class ExcelMakeController extends Controller
 
     }
 
-    // 選択クエリーオブジェクトを返す
-    public function advisorsGet(Request $request,$organization_id,$nowyear,$nowmonth)
-    {
-        Log::info('ExcelMakeController advisorsGet START');
-
-        $query = $this->ret_query($organization_id,$nowyear,$nowmonth);
-        $advisorsfees = DB::select($query);
-
-        // Log::debug('ExcelMakeController advisorsGet $query = ' .print_r($query,true));
-
-
-        Log::info('ExcelMakeController advisorsGet END');
-
-        return $advisorsfees;
-
-    }
-
     /**
-     *    ret_query()      : Queryを取得
+     *    advisorsGet()    : 選択クエリーオブジェクトを取得
      *    $organization_id : 組織ID
      *    $nowyear         : 選択年
      *    $nowmonth        : 当月
      */
-    public function ret_query($organization_id,$nowyear,$nowmonth) 
+    public function advisorsGet($organization_id, $nowyear, $nowmonth)
     {
-        Log::info('ExcelMakeController ret_query START');
+        Log::info('ExcelMakeController advisorsGet START');
 
         $fee_name = '';
         if($nowmonth == 1) {
@@ -283,9 +267,14 @@ class ExcelMakeController extends Controller
         $query  = str_replace('%nowyear%',         $nowyear,         $query);
         $query  = str_replace('%fee_name%',        $fee_name,        $query);
 
-        Log::info('ExcelMakeController ret_query END');
+        $advisorsfees = DB::select($query);
 
-        return $query;
+        // Log::debug('ExcelMakeController advisorsGet $query = ' .print_r($query,true));
+
+        Log::info('ExcelMakeController advisorsGet END');
+
+        return $advisorsfees;
+
     }
 
     /**
