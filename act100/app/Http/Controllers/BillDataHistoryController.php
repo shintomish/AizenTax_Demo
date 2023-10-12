@@ -225,11 +225,11 @@ class BillDataHistoryController extends Controller
 
         $disk = 'local';  // or 's3'
         $storage = Storage::disk($disk);
-        // /var/www/html/storage/app/public/invoice/xls/folder0001/20231011_合同会社グローアップ_00001_請求書.pdf
-        $str  = $billdatas->filepath;
-        $str2 = substr_replace($str, "", 26);       // /var/www/html/storage/app/
-        $filepath = str_replace($str2, '', $str);   // public/invoice/xls/folder0001/20231011_合同会社グローアップ_00001_請求書.pdf
-        // $filepath = $billdatas->filepath;   // public/billdata/user0171/2023年7月末-20230821T050250Z-001.pdf
+        // // /var/www/html/storage/app/public/invoice/xls/folder0001/20231011_合同会社グローアップ_00001_請求書.pdf
+        // $str  = $billdatas->filepath;
+        // $str2 = substr_replace($str, "", 26);       // /var/www/html/storage/app/
+        // $filepath = str_replace($str2, '', $str);   // public/invoice/xls/folder0001/20231011_合同会社グローアップ_00001_請求書.pdf
+        $filepath = $billdatas->filepath;   // public/billdata/user0171/2023年7月末-20230821T050250Z-001.pdf
         $filename = $billdatas->filename;   // 2023年7月末-20230821T050250Z-001.pdf
         $pdf_path = $filepath;
 
