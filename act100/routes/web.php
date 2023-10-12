@@ -92,13 +92,12 @@ Route::get('transserch',          'App\Http\Controllers\TransHistoryController@s
 // Route::get('transserch_custom',   'App\Http\Controllers\TransHistoryController@serch_custom')->name('transserch_custom');
 
 //-----------------------------------------------------------------------------------------------
-//- InvoiceHistory 請求書 送信履歴
+//- BilldataHistory 請求書 送信履歴
 //-----------------------------------------------------------------------------------------------
-Route::get('invoicehistory',             'App\Http\Controllers\InvoiceHistoryController@index')->name('invoicehistory');
-Route::get('invoicehistoryserch',        'App\Http\Controllers\InvoiceHistoryController@serch')->name('invoicehistoryserch');
-Route::get('invoicehistory/pdf/{id}',    'App\Http\Controllers\InvoiceHistoryController@show_up01')->name('invoice_pdf01');
-Route::get('invoicehistorymore',         'App\Http\Controllers\InvoiceHistoryController@more')->name('invoicehistory.more');
-Route::post('invoicehistory/update_api', 'App\Http\Controllers\InvoiceHistoryController@update_api')->name('invoicehistory.update_api');
+Route::get('billdatahistory',             'App\Http\Controllers\BillDataHistoryController@index')->name('billdatahistory');
+Route::get('billdatahistoryserch',        'App\Http\Controllers\BillDataHistoryController@serch')->name('billdatahistoryserch');
+Route::get('billdatahistory/pdf/{id}',    'App\Http\Controllers\BillDataHistoryController@show_up01')->name('billdata_pdf01');
+Route::post('billdatahistory/update_api', 'App\Http\Controllers\BillDataHistoryController@update_api')->name('billdatahistory.update_api');
 
 //-----------------------------------------------------------------------------------------------
 //- top 事務所 00_3
@@ -209,22 +208,22 @@ Route::post('advisorsfee/update_api',  'App\Http\Controllers\AdvisorsfeeControll
 Route::resource('advisorsfee',         'App\Http\Controllers\AdvisorsfeeController');
 
 //-----------------------------------------------------------------------------------------------
-//- 事務所 invoice 請求書 送信
+//- 事務所 billdata 請求書 送信
 //-----------------------------------------------------------------------------------------------
-Route::get('invoice/index',        'App\Http\Controllers\InvoiceController@index')->name('invoicein');
-Route::get('invoice/custom',       'App\Http\Controllers\InvoiceController@serch_custom')->name('invoice_custom');
-Route::get('invoice/serch',        'App\Http\Controllers\InvoiceController@serch')->name('invoiceserch');
-Route::post('invoice/upload/{id}', 'App\Http\Controllers\InvoiceController@postUpload')->name('invoicepostUpload');
-Route::resource('invoice',         'App\Http\Controllers\InvoiceController');
+Route::get('billdata/index',        'App\Http\Controllers\BillDataController@index')->name('billdatain');
+Route::get('billdata/custom',       'App\Http\Controllers\BillDataController@serch_custom')->name('billdata_custom');
+Route::get('billdata/serch',        'App\Http\Controllers\BillDataController@serch')->name('billdataserch');
+Route::post('billdata/upload/{id}', 'App\Http\Controllers\BillDataController@postUpload')->name('billdatapostUpload');
+Route::resource('billdata',         'App\Http\Controllers\BillDataController');
 
 //-----------------------------------------------------------------------------------------------
-//- 事務所 invoiceconfirm 請求書 確認
+//- 事務所 billdataconfirm 請求書 確認
 //-----------------------------------------------------------------------------------------------
-Route::get('invoiceconfirm/index',        'App\Http\Controllers\InvoiceconfirmController@index')->name('invoiceconfirmin');
-Route::get('invoiceconfirm/custom',       'App\Http\Controllers\InvoiceconfirmController@serch_custom')->name('invoiceconfirm_custom');
-Route::get('invoiceconfirm/serch',        'App\Http\Controllers\InvoiceconfirmController@serch')->name('invoiceconfirmserch');
-Route::post('invoiceconfirm/upload/{id}', 'App\Http\Controllers\InvoiceconfirmController@postUpload')->name('invoiceconfirmpostUpload');
-Route::resource('invoiceconfirm',         'App\Http\Controllers\InvoiceconfirmController');
+Route::get('billdataconfirm/index',        'App\Http\Controllers\BillDateconfirmController@index')->name('billdataconfirmin');
+Route::get('billdataconfirm/custom',       'App\Http\Controllers\BillDateconfirmController@serch_custom')->name('billdataconfirm_custom');
+Route::get('billdataconfirm/serch',        'App\Http\Controllers\BillDateconfirmController@serch')->name('billdataconfirmserch');
+Route::post('billdataconfirm/upload/{id}', 'App\Http\Controllers\BillDateconfirmController@postUpload')->name('billdataconfirmpostUpload');
+Route::resource('billdataconfirm',         'App\Http\Controllers\BillDateconfirmController');
 
 //-----------------------------------------------------------------------------------------------
 //- 事務所 wokprocbook 税理士業務処理簿 07
