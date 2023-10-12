@@ -248,13 +248,6 @@
                                     請求書データ送信確認ページ
                                 </a>
                             </li>
-                            {{-- 2023/09/22 --}}
-                            {{-- <li class="nav-item">
-                                <a class="nav-link" href="{{route('invoice.index')}}">
-                                    <i class="fas fa-file-upload"></i>
-                                    請求書データファイルアップロード
-                                </a>
-                            </li> --}}
                             <li class="nav-item">
                                 <a class="nav-link" href="{{route('wokprocbook.input')}}">
                                     <i class="fas fa-address-book"></i>
