@@ -233,7 +233,7 @@
                                     会計未処理事業者
                                 </a>
                             </li>
-                            {{-- 2023/09/22 --}}
+                            {{-- 2023/10/12 復活 --}}
                             {{-- 顧問料金 2022/05/20不要 --}}
                             <li class="nav-item">
                                 <a class="nav-link" href="{{route('advisorsfee.input')}}">
@@ -241,9 +241,9 @@
                                     請求書作成・アップロード
                                 </a>
                             </li>
-                            {{-- 2023/09/26 --}}
+                            {{-- 2023/10/12 --}}
                             <li class="nav-item">
-                                <a class="nav-link" href="{{route('billdata.index')}}">
+                                <a class="nav-link" href="{{route('billdatahistory_in')}}">
                                     <i class="fas fa-wallet"></i>
                                     請求書データ送信確認ページ
                                 </a>
@@ -346,11 +346,17 @@
                                 <h3>会計未処理事業者</h3>
                                 <form  class="form-inline my-2 my-lg-0 ml-2" action="{{route('notaccounth_custom')}}" method="GET">
                                 @break;
+                            {{-- 2023/10/12 --}}
                             @case ('06')
-                                {{-- 2023/09/22 --}}
                                 <!-- タイトル -->
                                 <h3>請求書作成・アップロード</h3>
                                 <form  class="form-inline my-2 my-lg-0 ml-2" action="{{route('advisorsfee_custom')}}" method="GET">
+                                @break;
+                            {{-- 2023/10/12 --}}
+                            @case ('06_2')
+                                <!-- タイトル -->
+                                <h3>請求書データ送信確認ページ</h3>
+                                <form  class="form-inline my-2 my-lg-0 ml-2" action="{{route('billdata_custom')}}" method="GET">
                                 @break;
                             @case ('07')
                                 <!-- タイトル -->

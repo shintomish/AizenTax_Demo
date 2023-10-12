@@ -16,8 +16,8 @@
             <thead>
                 <tr>
                     <th class="text-left"scope="col">ID</th>
-                    <th scope="col">ダウンロードファイル</th>
-                    <th scope="col">受信日</th>
+                    <th scope="col">送信ファイル</th>
+                    <th scope="col">送信日</th>
                     <th class="text-left" scope="col">ファイルサイズ</th>
                     <th scope="col">会社名</th>
                     <th scope="col"> </th>

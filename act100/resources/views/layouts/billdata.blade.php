@@ -321,16 +321,13 @@
                                 <form  class="form-inline my-2 my-lg-0 ml-2" action="{{route('notaccounth_custom')}}" method="GET">
                                 @break;
                             @case ('06')
+                                {{-- 2023/10/12 --}}
                                 <!-- タイトル -->
                                 <h3>請求書作成・アップロード</h3>
                                 <form  class="form-inline my-2 my-lg-0 ml-2" action="{{route('advisorsfee_custom')}}" method="GET">
                                 @break;
-                            {{-- @case ('06_1') --}}
-                                <!-- タイトル -->
-                                {{-- <h3>請求書データ送信確認ページ</h3> --}}
-                                {{-- <form  class="form-inline my-2 my-lg-0 ml-2" action="{{route('billdata_custom')}}" method="GET"> --}}
-                                {{-- @break; --}}
                             @case ('06_2')
+                                {{-- 2023/10/12 --}}
                                 <!-- タイトル -->
                                 <h3>請求書データ送信確認ページ</h3>
                                 <form  class="form-inline my-2 my-lg-0 ml-2" action="{{route('billdata_custom')}}" method="GET">
