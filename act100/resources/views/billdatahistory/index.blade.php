@@ -1,8 +1,7 @@
 {{-- @extends('layouts.app') --}}
-@extends('layouts.clienttrans')
+@extends('layouts.billdata')
 
 @section('content')
-    <h5>請求書データダウンロードページ</h5>
     <div class="row">
 
         <!-- 検索エリア -->
@@ -20,7 +19,7 @@
                     <th scope="col">送信日</th>
                     <th class="text-left" scope="col">ファイルサイズ</th>
                     <th scope="col">会社名</th>
-                    <th scope="col"> </th>
+                    {{-- <th scope="col"> </th> --}}
                     <th scope="col">操作</th>
                 </tr>
             </thead>
@@ -68,18 +67,18 @@
                         <td class="text-left">{{ $temp }}</td>
 
                         <td>
-                            @foreach ($customer_findrec as $customer_findrec2)
-                                @if ($customer_findrec2->id==$invoice->customer_id)
-                                    {{$customer_findrec2['business_name']}}
+                            @foreach ($customers as $customers2)
+                                @if ($customers2->id==$invoice->customer_id)
+                                    {{$customers2['business_name']}}
                                 @endif
                             @endforeach
                         </td>
-                        <td>
+                        {{-- <td>
                             <h6 >
                                 <p name="shine_{{$invoice->id}}" id="shine_{{$invoice->id}}" class="{{$clslight}}" ><label name="label_{{$invoice->id}}" style="margin-top:10px;" >{{$strnews}}</label>
                                 </p>
                             </h6>
-                        </td>
+                        </td> --}}
                         <td>
                             <div class="btn-toolbar">
                                 <div class="btn-group me-2 mb-0">
@@ -87,7 +86,7 @@
                                 {{--OK <a class="{{$clsvalue}}" href="{{ route('invoice_pdf01',$invoice->id)}}">{{$strvalue}}</a> --}}
                                 </div>
                             </div>
-                    <input class="{{$clsvalue}}" type="submit" id="btn_del_{{$invoice->id}}" name="btn_del_{{$invoice->id}}" id2="btn_del_{{$invoice->urgent_flg}}" value="{{$strvalue}}" >
+                    <input class="btn btn-secondary btn-sm" type="submit" id="btn_del_{{$invoice->id}}" name="btn_del_{{$invoice->id}}" id2="btn_del_{{$invoice->urgent_flg}}" value="ダウンロード" >
                         </td>
                     </tr>
                     @endforeach
@@ -99,7 +98,7 @@
                         <td><p> </p></td>
                         <td><p> </p></td>
                         <td><p> </p></td>
-                        <td><p> </p></td>
+                        {{-- <td><p> </p></td> --}}
                         <td><p> </p></td>
                     </tr>
                 @endif
@@ -129,76 +128,75 @@
                     var wok_id       = $(this).attr("name").replace('btn_del_', '');
                     var this_id      = $(this).attr("id");
                     var urgent_flg   = $(this).attr("id2").replace('btn_del_', '');
-                    var url          = "invoicehistory/pdf/" + wok_id;
+                    var url          = "pdf/" + wok_id;
                     $('#temp_form').method = 'POST';
                     $('#temp_form').submit();
                     var popup = window.open(url,"preview","width=800, height=600, top=200, left=500 scrollbars=yes");
-                    change_invoice_info( this_id        // 対象コントロール
-                                        , wok_id        // invoiceテーブルのID
-                                        , urgent_flg    // invoiceテーブルのurgent_flgの値
-                                        );
+                    // change_invoice_info( this_id        // 対象コントロール
+                    //                     , wok_id        // invoiceテーブルのID
+                    //                     , urgent_flg    // invoiceテーブルのurgent_flgの値
+                    //                     );
                 });
 
-                /**
-                * this_id         : 対象コントロール
-                * wok_id          : invoiceテーブルのID
-                *
-                */
-                function change_invoice_info( this_id
-                                            , wok_id        // invoiceテーブルのID
-                                            , urgent_flg    // invoiceテーブルのurgent_flgの値
-                                            ) {
-                    var reqData = new FormData();
-                                                reqData.append( "id"             , wok_id      );
-                    if( null != urgent_flg    ) reqData.append( "urgent_flg"     , urgent_flg );
+                // /**
+                // * this_id         : 対象コントロール
+                // * wok_id          : invoiceテーブルのID
+                // *
+                // */
+                // function change_invoice_info( this_id
+                //                             , wok_id        // invoiceテーブルのID
+                //                             , urgent_flg    // invoiceテーブルのurgent_flgの値
+                //                             ) {
+                //     var reqData = new FormData();
+                //                                 reqData.append( "id"             , wok_id      );
+                //     if( null != urgent_flg    ) reqData.append( "urgent_flg"     , urgent_flg );
 
-                    AjaxAPI.callAjax(
-                        "{{ route('invoicehis_upload_api') }}",
-                        reqData,
-                        function (res) {
-                            var shinename = 'shine_'   + wok_id;
-                            var btnname   = 'btn_del_' + wok_id;
+                //     AjaxAPI.callAjax(
+                //         "{{ route('invoicehis_upload_api') }}",
+                //         reqData,
+                //         function (res) {
+                //             var shinename = 'shine_'   + wok_id;
+                //             var btnname   = 'btn_del_' + wok_id;
 
-                            // console.log( shinename );
-                            // console.log( btnname );
+                //             // console.log( shinename );
+                //             // console.log( btnname );
 
-                            // 至急フラグ(1):通常 (2):至急
-                            if(urgent_flg == 2) {
-                                // 点滅のclass削除
-                                const elem = document.getElementById(shinename);
-                                if (elem) {
-                                    // クラス名を削除
-                                    elem.classList.remove("light_box");
-                                    // テキストを削除
-                                    elem.textContent = "";
-                                } else {
-                                    console.log( 'shine_non' );
-                                }
+                //             // 至急フラグ(1):通常 (2):至急
+                //             if(urgent_flg == 2) {
+                //                 // 点滅のclass削除
+                //                 const elem = document.getElementById(shinename);
+                //                 if (elem) {
+                //                     // クラス名を削除
+                //                     elem.classList.remove("light_box");
+                //                     // テキストを削除
+                //                     elem.textContent = "";
+                //                 } else {
+                //                     console.log( 'shine_non' );
+                //                 }
 
-                                // btnのclass変更
-                                const elem2 = document.getElementById(btnname);
-                                if (elem2) {
-                                    // クラス名を削除
-                                    elem2.classList.remove("btn-danger");
-                                    // クラス名を追加
-                                    elem2.classList.add("btn-secondary");
-                                } else {
-                                    console.log( 'btn_del_non' );
-                                }
+                //                 // btnのclass変更
+                //                 const elem2 = document.getElementById(btnname);
+                //                 if (elem2) {
+                //                     // クラス名を削除
+                //                     elem2.classList.remove("btn-danger");
+                //                     // クラス名を追加
+                //                     elem2.classList.add("btn-secondary");
+                //                 } else {
+                //                     console.log( 'btn_del_non' );
+                //                 }
 
-                                $('#'+this_id).effect("pulsate", { times:2 }, 500);
-                            }
-                        }
-                    )
+                //                 $('#'+this_id).effect("pulsate", { times:2 }, 500);
+                //             }
+                //         }
+                //     )
 
-                    // 至急フラグ(1):通常 (2):至急
-                    if(urgent_flg == 1) {
-                        // 何もしない
-                        console.log('no repaint');
-                        return;
-                    }
-
-                };
+                //     // 至急フラグ(1):通常 (2):至急
+                //     if(urgent_flg == 1) {
+                //         // 何もしない
+                //         console.log('no repaint');
+                //         return;
+                //     }
+                // };
 
             </script>
 

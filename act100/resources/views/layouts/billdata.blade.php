@@ -228,7 +228,7 @@
                             </li>
                             {{-- 2023/09/26 --}}
                             <li class="nav-item">
-                                <a class="nav-link" href="{{route('billdata.index')}}">
+                                <a class="nav-link" href="{{route('billdatahistory_in')}}">
                                     <i class="fas fa-wallet"></i>
                                     請求書データ送信確認ページ
                                 </a>

@@ -210,12 +210,12 @@ Route::resource('advisorsfee',         'App\Http\Controllers\AdvisorsfeeControll
 //-----------------------------------------------------------------------------------------------
 //- 事務所 請求書データ送信確認ページ 06_2  2023/10/12
 //-----------------------------------------------------------------------------------------------
-Route::get('billdatahistory/index',        'App\Http\Controllers\BillDataHistoryController@index')->name('billdatahistory_in');
-Route::get('billdatahistory/custom',       'App\Http\Controllers\BillDataHistoryController@serch_custom')->name('billdata_custom');
-Route::get('billdatahistory/serch',        'App\Http\Controllers\BillDataHistoryController@serch')->name('billdataserch');
-Route::get('billdatahistory/pdf/{id}',    'App\Http\Controllers\BillDataHistoryController@show_up01')->name('invoice_pdf01');
+Route::get('billdatahistory/index',       'App\Http\Controllers\BillDataHistoryController@index')->name('billdatahistory_in');
+Route::get('billdatahistory/custom',      'App\Http\Controllers\BillDataHistoryController@serch_custom')->name('billdata_custom');
+Route::get('billdatahistory/serch',       'App\Http\Controllers\BillDataHistoryController@serch')->name('billdataserch');
+Route::get('billdatahistory/pdf/{id}',    'App\Http\Controllers\BillDataHistoryController@show_up01')->name('billdata_pdf01');
 // Route::post('billdata/upload/{id}', 'App\Http\Controllers\BillDataHistoryController@postUpload')->name('billdatapostUpload');
-Route::resource('billdatahistory',         'App\Http\Controllers\BillDataHistoryController');
+Route::resource('billdatahistory',        'App\Http\Controllers\BillDataHistoryController');
 
 //-----------------------------------------------------------------------------------------------
 //- 事務所 wokprocbook 税理士業務処理簿 07

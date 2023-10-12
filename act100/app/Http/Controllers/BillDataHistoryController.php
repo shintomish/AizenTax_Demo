@@ -32,14 +32,9 @@ class BillDataHistoryController extends Controller
     {
         Log::info('billdatahistory index START');
 
-        //FileNameは「latestinformation.pdf」固定 2022/09/24
-        $books = DB::table('books')->first();
-        $str   = ( new DateTime($books->info_date))->format('Y-m-d');
-        $latestinfodate = '最新情報'.'('.$str.')';
-
         // ログインユーザーのユーザー情報を取得する
-        $user  = $this->auth_user_info();
-        $u_id  = $user->id;
+        $user    = $this->auth_user_info();
+        $userid  = $user->id;
         $organization_id =  $user->organization_id;
 
         // Customer(複数レコード)情報を取得する
@@ -48,11 +43,11 @@ class BillDataHistoryController extends Controller
 
         $indiv_class = $customer_findrec[0]['individual_class'];
 
-        // Log::debug('billdatahistory index  customer_findrec = ' . print_r($customer_findrec,true));
+        // Log::debug('billdatahistory index  organization_id = ' . print_r($organization_id,true));
 
         // Customer(all)情報を取得する
         if($organization_id == 0) {
-            $customers = Customer::whereNull('organization_id','>=',$organization_id)
+            $customers = Customer::where('organization_id','>=',$organization_id)
                         ->where('active_cancel','!=', 3)
                         ->whereNull('deleted_at')
                         ->orderBy('individual_class', 'asc')
@@ -67,18 +62,18 @@ class BillDataHistoryController extends Controller
                         ->get();
         }
 
-        $billdatas = Billdata::where('customer_id',$customer_id)
-                    ->where('extension_flg',2)
+        $billdatas = Billdata::where('extension_flg',2)
                     ->whereNull('deleted_at')
                     ->orderByRaw('created_at DESC')
                     ->sortable()
                     ->paginate(300);
 
-        $keyword = null;
-        $common_no = 'billdata';
+        $keyword  = null;
+        $keyword2 = null;
+        $common_no = '06_2';
         Log::info('billdatahistory index END');
 
-        $compacts = compact( 'common_no','indiv_class','billdatas','customers','customer_findrec','customer_id','keyword' );
+        $compacts = compact( 'common_no','indiv_class','billdatas','customers','customer_findrec','customer_id','keyword','keyword2','userid' );
 
         return view( 'billdatahistory.index', $compacts );
     }
@@ -108,8 +103,8 @@ class BillDataHistoryController extends Controller
         $indiv_class = $customers->individual_class;
 
         // ログインユーザーのユーザー情報を取得する
-        $user  = $this->auth_user_info();
-        $u_id = $user->id;
+        $user   = $this->auth_user_info();
+        $userid = $user->id;
         $organization_id =  $user->organization_id;
 
         // 日付が入力された
@@ -123,8 +118,7 @@ class BillDataHistoryController extends Controller
                 ->sortable()
                 ->paginate(300);
         } else {
-            $billdatas = Billdata::where('customer_id',$customer_id)
-                ->where('extension_flg',2)
+            $billdatas = Billdata::where('extension_flg',2)
                 ->whereNull('deleted_at')
                 ->orderByRaw('created_at DESC')
                 ->sortable()
@@ -133,7 +127,7 @@ class BillDataHistoryController extends Controller
 
         // Customer(all)情報を取得する
         if($organization_id == 0) {
-            $customers = Customer::whereNull('organization_id','>=',$organization_id)
+            $customers = Customer::where('organization_id','>=',$organization_id)
                         ->where('active_cancel','!=', 3)
                         ->whereNull('deleted_at')
                         ->orderBy('individual_class', 'asc')
@@ -148,9 +142,9 @@ class BillDataHistoryController extends Controller
                         ->get();
         }
 
-        $common_no = 'billdata';
+        $common_no = '06_2';
 
-        $compacts = compact( 'common_no','indiv_class','billdatas','customers','customer_findrec','customer_id','keyword' );
+        $compacts = compact( 'common_no','indiv_class','billdatas','customers','customer_findrec','customer_id','keyword','userid' );
 
         Log::info('billdatahistory serch END');
         return view( 'billdatahistory.index', $compacts );
@@ -171,8 +165,8 @@ class BillDataHistoryController extends Controller
         $customer_id = $request->Input('customer_id');
 
         // ログインユーザーのユーザー情報を取得する
-        $user  = $this->auth_user_info();
-        $u_id = $user->id;
+        $user   = $this->auth_user_info();
+        $userid = $user->id;
         $organization_id =  $user->organization_id;
 
         // 顧客が選択された
@@ -185,8 +179,8 @@ class BillDataHistoryController extends Controller
                 ->sortable()
                 ->paginate(300);
         } else {
-            $billdatas = Billdata::whereNull('deleted_at')
-                ->where('extension_flg',2)
+            $billdatas = Billdata::where('extension_flg',2)
+                ->whereNull('deleted_at')
                 ->orderByRaw('created_at DESC')
                 ->sortable()
                 ->paginate(300);
@@ -207,9 +201,10 @@ class BillDataHistoryController extends Controller
                             // ->paginate(10);
         }
 
-        $common_no = 'billdata';
-        $keyword = null;
-        $compacts = compact( 'common_no','billdatas','customers','customer_findrec','customer_id','keyword' );
+        $common_no = '06_2';
+        $keyword  = null;
+        $keyword2 = null;
+        $compacts = compact( 'common_no','billdatas','customers','customer_findrec','customer_id','keyword','keyword2','userid' );
 
         Log::info('billdatahistory serch_custom END');
         return view( 'billdatahistory.index', $compacts );
