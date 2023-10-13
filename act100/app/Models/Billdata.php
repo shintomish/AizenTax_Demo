@@ -27,6 +27,7 @@ class Billdata extends Model
     protected $fillable = [
         'filepath',
         'filename',
+        'year',
         'filesize',
         'organization_id',
         'extension_flg',
