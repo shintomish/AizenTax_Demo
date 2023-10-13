@@ -21,6 +21,7 @@ class ExportService
 
     /**
      *    makeXlsPdf()    : Excelを作成しPDFに変換
+     *    $nowyear        : 年
      *    $tourokuno      : 登録番号
      *    $tekiyou        : 摘要名
      *    $furibi         : 振込日
@@ -34,6 +35,7 @@ class ExportService
      *    $customers_id   : 顧客ID
      */
     public function makeXlsPdf(
+                        $nowyear,
                         $tourokuno,
                         $tekiyou,
                         $furibi,
@@ -46,7 +48,7 @@ class ExportService
                         $foloder_name, 
                         $file_name,
                         $customers_id
-                        )
+                    )
     {
         Log::info('ExportService makeXlsPdf START');
 
@@ -88,9 +90,9 @@ class ExportService
         }
 
         // Excel出力
-        $xls_path = 'app/public/invoice/xls/'. $foloder_name. '/'. $file_name. '.xlsx';
+        $xls_path        = 'app/public/invoice/xls/'. $foloder_name. '/'. $file_name. '.xlsx';
         $export_xls_path = storage_path($xls_path);         //'app/invoice'
-        $writer     = new XlsxWriter($spreadsheet);
+        $writer          = new XlsxWriter($spreadsheet);
         $writer->save($export_xls_path);
 
         // Pdf出力
@@ -101,9 +103,10 @@ class ExportService
             // Log::debug('ExportService makeXlsPdf xls $filesize = ' . $filesize);
 
             // billdatas更新
-            $extension_flg = 1;
+            $extension_flg      = 1;
             $extension_filename = $file_name . '.xlsx';
-            $this->billdataUpdate($export_xls_path,$extension_filename,$customers_id,$filesize,$extension_flg);
+            $ins_path = 'public/invoice/xls/'. $foloder_name. '/'. $file_name. '.xlsx';
+            $this->billdataUpdate($nowyear, $ins_path, $extension_filename, $customers_id, $filesize, $extension_flg);
 
             // ExcelファイルをPDFに変換するコード
             $pdf_path = $this->convertOfficeToPdf($file_name, $foloder_name, $export_xls_path);
@@ -112,9 +115,10 @@ class ExportService
                 $filesize = filesize($pdf_path); // ファイルサイズをバイト単位で取得
                 // Log::debug('ExportService makeXlsPdf pdf $filesize = ' . $filesize);
                 // billdatas更新
-                $extension_flg = 2;
+                $extension_flg      = 2;
                 $extension_filename = $file_name . '.pdf';
-                $this->billdataUpdate($pdf_path,$extension_filename,$customers_id,$filesize,$extension_flg);
+                $ins_path = 'public/invoice/pdf/'. $foloder_name. '/'. $file_name. '.pdf';
+                $this->billdataUpdate($nowyear, $ins_path, $extension_filename, $customers_id, $filesize, $extension_flg);
             }
         }
 
@@ -177,7 +181,7 @@ class ExportService
         return file_exists($pdf_path) ? $pdf_path : null;
     }
 
-    public function billdataUpdate($filepath, $fileName, $customers_id, $filesize, $extension_flg)
+    public function billdataUpdate($nowyear, $filepath, $fileName, $customers_id, $filesize, $extension_flg)
     {
         Log::info('ExportService  billdataUpdate START');
 
@@ -186,6 +190,7 @@ class ExportService
             Log::info('beginTransaction - ExportService  billdataUpdate saveFile start');
 
             $billdata = new Billdata();
+            $billdata->year            = $nowyear;
             $billdata->filepath        = $filepath;
             $billdata->filename        = $fileName;
             $billdata->organization_id = 1;
