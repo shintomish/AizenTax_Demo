@@ -215,6 +215,7 @@ Route::get('billdatahistory/custom',      'App\Http\Controllers\BillDataHistoryC
 Route::get('billdatahistory/serch',       'App\Http\Controllers\BillDataHistoryController@serch')->name('billdataserch');
 Route::get('billdatahistory/pdf/{id}',    'App\Http\Controllers\BillDataHistoryController@show_up01')->name('billdata_pdf01');
 // Route::post('billdata/upload/{id}', 'App\Http\Controllers\BillDataHistoryController@postUpload')->name('billdatapostUpload');
+Route::get('billdatahis_down',            'App\Http\Controllers\BillDataHistoryController@alldownload')->name('billdata_down');
 Route::resource('billdatahistory',        'App\Http\Controllers\BillDataHistoryController');
 
 //-----------------------------------------------------------------------------------------------

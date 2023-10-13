@@ -217,7 +217,7 @@
                             {{-- 顧問料金 2022/05/20不要 --}}
                             <li class="nav-item">
                                 <a class="nav-link" href="{{route('advisorsfee.input')}}">
-                                    <i class="fas fa-wallet"></i>
+                                    <i class="fas fa-file-upload"></i>
                                     請求書作成・アップロード
                                 </a>
                             </li>

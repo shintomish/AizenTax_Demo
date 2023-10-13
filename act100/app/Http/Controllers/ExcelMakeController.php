@@ -69,6 +69,7 @@ class ExcelMakeController extends Controller
 
         // 配列初期化
         $work_data = array(
+            'nowyear'      => array(),
             'to_company'   => array(),
             'to_represent' => array(),
             'from_company' => array(),
@@ -87,6 +88,8 @@ class ExcelMakeController extends Controller
 
         $cnt = 1;
         foreach ($xls_inp_data as $xls_data2) {
+
+            $work_data['nowyear']          = $nowyear;        // 年
 
             if($xls_data2->individual_class == 1) {
                 $work_data['to_company']    = $xls_data2->business_name. ' 御中';     // 会社名
@@ -136,6 +139,7 @@ class ExcelMakeController extends Controller
         $export_service = new ExportService();
             /**
              *    makeXlsPdf()    : Excelを作成しPDFに変換
+             *    $nowyear        : 年
              *    $tourokuno      : 登録番号
              *    $tekiyou        : 摘要名
              *    $furibi         : 振込日
@@ -150,6 +154,7 @@ class ExcelMakeController extends Controller
              */
         foreach ($xls_out_data as $data) {
             $export_service->makeXlsPdf(
+                $data['nowyear'],
                 $data['tourokuno'],
                 $tekiyou,
                 $furibi,

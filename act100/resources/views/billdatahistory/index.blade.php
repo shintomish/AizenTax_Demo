@@ -1,6 +1,6 @@
 {{-- @extends('layouts.app') --}}
 @extends('layouts.billdata')
-
+{{-- // 事務所 請求書データ確認 --}}
 @section('content')
     <div class="row">
 
@@ -19,24 +19,24 @@
                     <th scope="col">送信日</th>
                     <th class="text-left" scope="col">ファイルサイズ</th>
                     <th scope="col">会社名</th>
-                    {{-- <th scope="col"> </th> --}}
+                    <th scope="col">未読/既読</th>
                     <th scope="col">操作</th>
                 </tr>
             </thead>
 
             <tbody id="table" >
                 @if($billdatas->count())
-                    @foreach($billdatas as $invoice)
+                    @foreach($billdatas as $billdata)
                     <tr>
-                        <td class="text-left">{{ number_format($invoice->id) }}</td>
-                        <td>{{ $invoice->filename }}</td>
+                        <td class="text-left">{{ number_format($billdata->id) }}</td>
+                        <td>{{ $billdata->filename }}</td>
                             @php
                                 $str = "";
-                                if (isset($invoice->created_at)) {
-                                    $str = ( new DateTime($invoice->created_at))->format('Y-m-d');
+                                if (isset($billdata->created_at)) {
+                                    $str = ( new DateTime($billdata->created_at))->format('Y-m-d');
                                 }
 
-                                $insize = $invoice->filesize;
+                                $insize = $billdata->filesize;
                                 if ($insize >= 1073741824) {
                                     $fileSize = round($insize / 1024 / 1024 / 1024,1) . ' GB';
                                 } elseif ($insize >= 1048576) {
@@ -48,8 +48,16 @@
                                 }
                                 $temp = $fileSize;
 
+                                if($billdata->urgent_flg == 2) {
+                                    $kidoku = '未読';
+                                    $textcolor = 'text-danger';
+                                } else {
+                                    $kidoku = '既読';
+                                    $textcolor = 'text-secondary';
+                                }
+
                                 // 至急フラグ(1):通常 (2):至急
-                                if($invoice->urgent_flg == 2) {
+                                if($billdata->urgent_flg == 2) {
                                     $strvalue = "ダウンロード";
                                     $clsvalue = "btn btn-danger btn-lg";
                                     $strstyle = "color:red";
@@ -68,25 +76,25 @@
 
                         <td>
                             @foreach ($customers as $customers2)
-                                @if ($customers2->id==$invoice->customer_id)
+                                @if ($customers2->id==$billdata->customer_id)
                                     {{$customers2['business_name']}}
                                 @endif
                             @endforeach
                         </td>
-                        {{-- <td>
-                            <h6 >
-                                <p name="shine_{{$invoice->id}}" id="shine_{{$invoice->id}}" class="{{$clslight}}" ><label name="label_{{$invoice->id}}" style="margin-top:10px;" >{{$strnews}}</label>
-                                </p>
+                        {{-- 未読/既読 --}}
+                        <td>
+                            <h6>
+                                <p class={{ $textcolor }}>{{ $kidoku }}</p>
                             </h6>
-                        </td> --}}
+                        </td>
                         <td>
                             <div class="btn-toolbar">
                                 <div class="btn-group me-2 mb-0">
-                                {{-- <a class="btn btn-primary btn-sm" href="{{ route('invoice_pdf01',$invoice->id)}}">ダウンロード</a> --}}
-                                {{--OK <a class="{{$clsvalue}}" href="{{ route('invoice_pdf01',$invoice->id)}}">{{$strvalue}}</a> --}}
+                                {{-- <a class="btn btn-primary btn-sm" href="{{ route('invoice_pdf01',$billdata->id)}}">ダウンロード</a> --}}
+                                {{--OK <a class="{{$clsvalue}}" href="{{ route('invoice_pdf01',$billdata->id)}}">{{$strvalue}}</a> --}}
                                 </div>
                             </div>
-                    <input class="btn btn-secondary btn-sm" type="submit" id="btn_del_{{$invoice->id}}" name="btn_del_{{$invoice->id}}" id2="btn_del_{{$invoice->urgent_flg}}" value="ダウンロード" >
+                    <input class="btn btn-secondary btn-sm" type="submit" id="btn_del_{{$billdata->id}}" name="btn_del_{{$billdata->id}}" id2="btn_del_{{$billdata->urgent_flg}}" value="ダウンロード" >
                         </td>
                     </tr>
                     @endforeach
@@ -98,7 +106,7 @@
                         <td><p> </p></td>
                         <td><p> </p></td>
                         <td><p> </p></td>
-                        {{-- <td><p> </p></td> --}}
+                        <td><p> </p></td>
                         <td><p> </p></td>
                     </tr>
                 @endif

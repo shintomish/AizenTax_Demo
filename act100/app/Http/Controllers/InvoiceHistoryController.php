@@ -1,5 +1,6 @@
 <?php
 
+// クライアント 請求書データ確認
 namespace App\Http\Controllers;
 
 use DateTime;
@@ -112,9 +113,6 @@ class InvoiceHistoryController extends Controller
             ->orderBy('id', 'asc')
             ->first();
 
-        // 2022/11/30
-        // 2022/11/10
-        // $indiv_class = $customer_findrec[0]['individual_class'];
         $indiv_class = $customers->individual_class;
 
 // Log::debug('invoicehistory serch  keyword     = ' . print_r($keyword,true));

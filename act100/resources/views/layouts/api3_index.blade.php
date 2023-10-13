@@ -193,22 +193,21 @@
                         {{-- 2023/08/17 上コメント --}}
 
                         {{-- 2023/10/12 以下追加 --}}
-                        <h6 class="sidebar-heading d-flex justify-content-between align-items-center px-3 mt-4 mb-1 text-muted">
-                            <span>請求書データ</span>
-                            <a class="link-secondary" href="#" aria-label="Add a new report">
-                                <span data-feather="plus-circle"></span>
+                        {{-- 2023/10/12 復活 --}}
+                        {{-- 顧問料金 2022/05/20不要 --}}
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{route('advisorsfee.input')}}">
+                                <i class="fas fa-file-upload"></i>
+                                請求書作成・アップロード
                             </a>
-                        </h6>
-                        <ul class="nav flex-column mb-2">
-                            <li class="nav-item">
-                                <a class="nav-link" href="{{route('invoicehistory')}}">
-                                {{-- <a class="nav-link" href=""> --}}
-                                    {{-- <span data-feather="file"></span> --}}
-                                    <i class="fas fa-download"></i>
-                                    請求書データダウンロードページ
-                                </a>
-                            </li>
-                        </ul>
+                        </li>
+                        {{-- 2023/10/12 --}}
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{route('billdatahistory_in')}}">
+                                <i class="fas fa-wallet"></i>
+                                請求書データ送信確認ページ
+                            </a>
+                        </li>
                         {{-- 2023/10/12 上追加 --}}
 
                         {{-- 2023/08/17 以下追加 --}}
