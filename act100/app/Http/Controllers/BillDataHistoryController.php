@@ -3,7 +3,7 @@
 // 事務所 請求書データ確認
 namespace App\Http\Controllers;
 
-use DateTime;
+// use DateTime;
 use App\Models\Billdata;
 use App\Models\Customer;
 
@@ -11,6 +11,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\File;
 
 class BillDataHistoryController extends Controller
 {
@@ -33,7 +34,7 @@ class BillDataHistoryController extends Controller
     {
         Log::info('billdatahistory index START');
 
-        // 年を取得2 
+        // 年を取得2
         $nowyear   = intval($this->get_now_year2());
         //今年の月を取得
         $nowmonth = intval($this->get_now_month());
@@ -93,8 +94,8 @@ class BillDataHistoryController extends Controller
     public function serch(Request $request)
     {
         Log::info('billdatahistory serch START');
-        
-        // 年を取得2 
+
+        // 年を取得2
         $nowyear   = intval($this->get_now_year2());
 
         //-------------------------------------------------------------
@@ -169,60 +170,189 @@ class BillDataHistoryController extends Controller
     {
         Log::info('billdatahistory serch_custom START');
 
-        // 年を取得2 
-        $nowyear   = intval($this->get_now_year2());
+        if ($request->has('submit_new')) {
+            Log::info('billdatahistory submit_new serch_custom END');
+            return redirect()->route('billdatahistory_in');
+        }
+        //-------------------------------------------------------------
+        //- Request パラメータ
+        //-------------------------------------------------------------
+        $keyword = $request->Input('keyword');
+        $customer_id = $request->Input('customer_id');
+
+        // 年を取得2
+        $keyyear   = intval($this->get_now_year2());
+
         //今年の月を取得
         $nowmonth = intval($this->get_now_month());
 
         //-------------------------------------------------------------
         //- Request パラメータ
         //-------------------------------------------------------------
-        $customer_id = $request->Input('customer_id');
+        // $customer_id = $request->Input('customer_id');
 
         // ログインユーザーのユーザー情報を取得する
         $user   = $this->auth_user_info();
         $userid = $user->id;
         $organization_id =  $user->organization_id;
 
-        // 顧客が選択された
-        if($customer_id) {
-            $billdatas = Billdata::where('extension_flg',2)
-                ->where('customer_id',$customer_id)
-                ->where('year',       $nowyear)
-                ->whereNull('deleted_at')
-                ->orderByRaw('created_at DESC')
-                ->sortable()
-                ->paginate(300);
-        } else {
-            $billdatas = Billdata::where('extension_flg',2)
-                ->where('year',       $nowyear)
-                ->whereNull('deleted_at')
-                ->orderByRaw('created_at DESC')
-                ->sortable()
-                ->paginate(300);
-        };
-
         // Customer(複数レコード)情報を取得する
         $customer_findrec = $this->auth_customer_findrec();
 
-        // Customer(all)情報を取得する
-        if($organization_id == 0) {
-            $customers = Customer::whereNull('deleted_at');
-                            // ->sortable()
-                            // ->paginate(10);
+        // 名前が入力された
+        if($keyword) {
+            if($organization_id == 0) {
+                // customersを取得
+                $customers = Customer::where('organization_id','>=',$organization_id)
+                                    ->whereNull('deleted_at')
+                                    ->get();
+                // billdatasを取得
+                $billdatas = Billdata::select(
+                                    'billdatas.id as id'
+                                    ,'billdatas.organization_id as organization_id'
+                                    ,'billdatas.customer_id as customer_id'
+                                    ,'billdatas.year as year'
+                                    ,'billdatas.filepath as filepath'
+                                    ,'billdatas.filename as filename'
+                                    ,'billdatas.filesize as filesize'
+                                    ,'billdatas.extension_flg as extension_flg'
+                                    ,'billdatas.urgent_flg as urgent_flg'
+                                    ,'billdatas.created_at as created_at'
+
+                                    ,'customers.id as customers_id'
+                                    ,'customers.business_name as business_name'
+                                    ,'customers.business_address as business_address'
+
+                                    )
+                                    ->leftJoin('customers', function ($join) {
+                                        $join->on('billdatas.customer_id', '=', 'customers.id');
+                                    })
+
+                                    ->where('billdatas.organization_id','>=',$organization_id)
+                                    ->whereNull('customers.deleted_at')
+                                    ->whereNull('billdatas.deleted_at')
+                                    ->where('customers.business_name', 'like', "%$keyword%")
+                                    ->where('billdatas.year', '=', $keyyear)
+                                    ->orderBy('billdatas.created_at', 'desc')
+                                    ->paginate(500);
+            } else {
+                // customersを取得
+                $customers = Customer::where('organization_id','=',$organization_id)
+                                    ->whereNull('deleted_at')
+                                    ->get();
+
+                // billdatasを取得
+                $billdatas = Billdata::select(
+                                    'billdatas.id as id'
+                                    ,'billdatas.organization_id as organization_id'
+                                    ,'billdatas.customer_id as customer_id'
+                                    ,'billdatas.year as year'
+                                    ,'billdatas.filepath as filepath'
+                                    ,'billdatas.filename as filename'
+                                    ,'billdatas.filesize as filesize'
+                                    ,'billdatas.extension_flg as extension_flg'
+                                    ,'billdatas.urgent_flg as urgent_flg'
+                                    ,'billdatas.created_at as created_at'
+
+                                    ,'customers.id as customers_id'
+                                    ,'customers.business_name as business_name'
+                                    ,'customers.business_address as business_address'
+
+                                    )
+                                    ->leftJoin('customers', function ($join) {
+                                        $join->on('billdatas.customer_id', '=', 'customers.id');
+                                    })
+
+                                    ->where('billdatas.organization_id','>=',$organization_id)
+                                    ->whereNull('customers.deleted_at')
+                                    ->whereNull('billdatas.deleted_at')
+                                    ->where('customers.business_name', 'like', "%$keyword%")
+                                    ->where('billdatas.year', '=', $keyyear)
+                                    ->orderBy('billdatas.created_at', 'desc')
+                                    ->paginate(500);
+            }
+        // 名前が入力されてない
         } else {
-            $customers = Customer::where('organization_id','=',$organization_id)
-                            ->whereNull('deleted_at');
-                            // ->sortable()
-                            // ->paginate(10);
-        }
+            if($organization_id == 0) {
+                // customersを取得
+                $customers = Customer::where('organization_id','>=',$organization_id)
+                                    ->whereNull('deleted_at')
+                                    ->get();
+                // billdatasを取得
+                $billdatas = Billdata::select(
+                                    'billdatas.id as id'
+                                    ,'billdatas.organization_id as organization_id'
+                                    ,'billdatas.customer_id as customer_id'
+                                    ,'billdatas.year as year'
+                                    ,'billdatas.filepath as filepath'
+                                    ,'billdatas.filename as filename'
+                                    ,'billdatas.filesize as filesize'
+                                    ,'billdatas.extension_flg as extension_flg'
+                                    ,'billdatas.urgent_flg as urgent_flg'
+                                    ,'billdatas.created_at as created_at'
+
+                                    ,'customers.id as customers_id'
+                                    ,'customers.business_name as business_name'
+                                    ,'customers.business_address as business_address'
+
+                                    )
+                                    ->leftJoin('customers', function ($join) {
+                                        $join->on('billdatas.customer_id', '=', 'customers.id');
+                                    })
+
+                                    ->where('billdatas.organization_id','>=',$organization_id)
+                                    ->whereNull('customers.deleted_at')
+                                    ->whereNull('billdatas.deleted_at')
+                                    ->where('billdatas.year', '=', $keyyear)
+                                    ->orderBy('billdatas.created_at', 'desc')
+                                    ->paginate(500);
+            } else {
+                // customersを取得
+                $customers = Customer::where('organization_id','=',$organization_id)
+                                    ->whereNull('deleted_at')
+                                    ->get();
+
+                // billdatasを取得
+                $billdatas = Billdata::select(
+                                    'billdatas.id as id'
+                                    ,'billdatas.organization_id as organization_id'
+                                    ,'billdatas.customer_id as customer_id'
+                                    ,'billdatas.year as year'
+                                    ,'billdatas.filepath as filepath'
+                                    ,'billdatas.filename as filename'
+                                    ,'billdatas.filesize as filesize'
+                                    ,'billdatas.extension_flg as extension_flg'
+                                    ,'billdatas.urgent_flg as urgent_flg'
+                                    ,'billdatas.created_at as created_at'
+
+                                    ,'customers.id as customers_id'
+                                    ,'customers.business_name as business_name'
+                                    ,'customers.business_address as business_address'
+
+                                    )
+                                    ->leftJoin('customers', function ($join) {
+                                        $join->on('billdatas.customer_id', '=', 'customers.id');
+                                    })
+
+                                    ->where('billdatas.organization_id','=',$organization_id)
+                                    ->whereNull('customers.deleted_at')
+                                    ->whereNull('billdatas.deleted_at')
+                                    ->where('billdatas.year', '=', $keyyear)
+                                    ->orderBy('billdatas.created_at', 'desc')
+                                    ->paginate(500);
+            }
+        };
+
+        // * 今年の年を取得 inputに変更 2023/03/13
+        // $nowyear = $this->get_now_year();
+        $nowyear  = $keyyear;
 
         $common_no = '06_2';
-        $keyword  = null;
-        $keyword2 = null;
+        $keyword2  = $keyword;
         $compacts = compact( 'nowyear','nowmonth','common_no','billdatas','customers','customer_findrec','customer_id','keyword','keyword2','userid' );
 
         Log::info('billdatahistory serch_custom END');
+
         return view( 'billdatahistory.index', $compacts );
     }
 
@@ -316,135 +446,174 @@ class BillDataHistoryController extends Controller
     {
         Log::info('billdatahistory all_download START');
 
-        // 年を取得2 
-        $nowyear   = intval($this->get_now_year2());
-        //今年の月を取得
-        $nowmonth = intval($this->get_now_month());
+        // // 年を取得2
+        // $nowyear   = intval($this->get_now_year2());
+        // //今年の月を取得
+        // $nowmonth = intval($this->get_now_month());
 
         //-------------------------------------------------------------
         //- Request パラメータ
         //-------------------------------------------------------------
-        $customer_id = $request->Input('customer_id');
+        $nowyear  = $request->Input('year');
+        $nowmonth = $request->Input('month');
 
         // ログインユーザーのユーザー情報を取得する
         $user   = $this->auth_user_info();
         $userid = $user->id;
         $organization_id =  $user->organization_id;
 
-        // // Jsonより取得
-        // $jsonfile = storage_path() . "/app/userdata/customer_info_". $users->id. ".json";
-        // $jsonUrl = $jsonfile; //JSONファイルの場所とファイル名を記述
-        // $customer_id = 0;
-        // if (file_exists($jsonUrl)) {
-        //     $json = file_get_contents($jsonUrl);
-        //     $json = mb_convert_encoding($json, 'UTF8', 'ASCII,JIS,UTF-8,EUC-JP,SJIS-WIN');
-        //     $obj = json_decode($json, true);
-        //     $obj = $obj["res"]["info"];
-        //     foreach($obj as $key => $val) {
-        //         $customer_id = $val["status"];
-        //     }
-        //     // Log::info('client postUpload  jsonUrl OK');
-        // } else {
-        //     // echo "データがありません";
-        //     // Log::info('client postUpload  jsonUrl NG');
+        // ret_query_count(): Queryを取得 Count用
+        $count = $this->ret_query_count($organization_id, $nowyear, $nowmonth);
+        if($count == 0) {
 
-        // }
+            Log::info('billdatahistory alldownload $count = 0 END');
 
-//         // 選択された顧客IDからCustomer情報(フォルダー名)を取得する
-//         // $customers  = $this->auth_user_foldername($u_id);
-//         $customers  = $this->auth_user_foldername($customer_id);
-//         $foldername = $customers->foldername;
-//         $business_name = $customers->business_name;
-//         $folderpath = 'app/userdata/' . $foldername;
+            // toastrというキーでメッセージを格納　今月の請求データはありません
+            session()->flash('toastr', config('toastr.invoice_warning'));
 
-//         // folderfullpath
-//         $path   = storage_path($folderpath);
-//         $path2  = storage_path($folderpath);
-//         // folderpath配下のファイル一覽対象File取得
-//         // $files = \File::files($path);
+            return redirect()->route('billdatahistory_in');
+        }
 
-//         //Zipファイル名指定
-//         $zipFileName = $business_name .'_download.zip';
+        // Zipファイル名指定
+        $zipFileName = $nowyear .'年'. $nowmonth . '月度_請求書' .'_download.zip';
 
-//         //Zipファイル一時保存ディレクトリ取得
-//         // ダウンロードさせたいファイルのフルパス
-//         $fullpath = storage_path() . '/tmp/' . $zipFileName;
+        // Zipファイル一時保存ディレクトリ取得
+        // ダウンロードさせたいファイルのフルパス
+        $fullpath = storage_path() . '/tmp/' . $zipFileName;
 
-//         //Zipクラスロード
-//         $zip = new \ZipArchive();
+        //処理制限時間を外す
+        set_time_limit(0);
 
-//         //Zipファイルオープン
-//         $result = $zip->open($fullpath, \ZipArchive::CREATE);
-//         if ($result !== true) {
-//             return false;
-//         }
+        //Zipクラスロード
+        $zip = new \ZipArchive();
 
-//         //処理制限時間を外す
-//         set_time_limit(0);
+        //Zipファイルオープン
+        $result = $zip->open($fullpath, \ZipArchive::CREATE);
+        if ($result !== true) {
+            return false;
+        }
 
-//         //パス取得
-//         $fpath_array_beta = array_diff(scandir($path), ['.', '..']);
+        //Zip追加処理
+        $billdatas = $this->billdataGet($organization_id, $nowyear, $nowmonth);
+        foreach ($billdatas as $billdata) {
+            $wrk_path  = $billdata->filepath;   // public/billdata/user0171/2023年7月末-20230821T050250Z-001.pdf
+            $fulpath2  = storage_path() . '/app/' . $wrk_path;
 
-//         // zip追加する本命のパスを格納する配列
-//         $fpath_array = array();
+            // Log::debug('billdatahistory alldownload  wrk_path = ' . print_r($wrk_path,true));
+            // Log::debug('billdatahistory alldownload  fulpath2 = ' . print_r($fulpath2,true));
 
-//         // ディレクトリ判別
-//         foreach ($fpath_array_beta as $key => $value) {
-//             if(is_dir("$path/$value")){
-//                 // パス指定
-//                 $path_sub = "$path/$value";
-//                 // サブフォルダ内のファイル名取得
-//                 $array_beta = array_diff(scandir($path_sub), ['.', '..']);
-//                 // パスとして取得(2元配列に追加)
-//                 foreach ($array_beta as $key2 => $value2) {
-//                     array_push($fpath_array,"$path2/$value/$value2");
-//                 }
-//             }else{
-//                 // ファイルの場合はそのまま追加
-//                 array_push($fpath_array,"$path2/$value");
-//             }
-//         }
+            $filename = $billdata->filename;
 
-//         //Zip追加処理
-//         foreach ($fpath_array as $filepath) {
-//             $fname    = pathinfo( $filepath, PATHINFO_FILENAME  );
-//             $exten    = pathinfo( $filepath, PATHINFO_EXTENSION );
-//             $filename = $fname .'.'. $exten;
+            // iconv — ある文字エンコーディングの文字列を、別の文字エンコーディングに変換する
+            $str    = iconv('UTF-8', 'UTF-8//IGNORE', $filename);
+            Log::info('billdatahistory all_download after $str = ' . print_r($str, true));
 
-//             // 2022/12/13 iconv — ある文字エンコーディングの文字列を、別の文字エンコーディングに変換する
-//             $str    = iconv('UTF-8', 'UTF-8//IGNORE', $filename);
-// Log::info('filemng alldwonload after $str = ' . print_r($str, true));
+            // ファイルがあれば追加
+            $rtn = File::exists($fulpath2);
+            if( $rtn == true ){
+                if($billdata->extension_flg == 1) {
+                    $zip->addFile($fulpath2, 'xls/'. $str);
+                } else {
+                    $zip->addFile($fulpath2, 'pdf/'. $str);
+                }
+            }
 
-//             // $zip->addFile($filepath, mb_convert_encoding($filename, 'CP932', 'UTF-8'));
-//             $zip->addFile($filepath, $str);
-//         }
-//         $zip->close();
+        }
+        $zip->close();
 
-//         Log::info('filemng alldwonload END');
+        // ダウンロードしたファイル
+        $rtn = File::exists($fullpath);
+        if( $rtn == true ){
 
-//         $rtn = File::exists($fullpath);
-//         if( $rtn == true ){
+            Log::info('filemng alldwonload $rtn == true END');
+            // 作成されたzipファイルをダウンロードしてディレクトリから削除
+            return response()->download($fullpath, basename($fullpath), [])->deleteFileAfterSend(true);
+        } else {
 
-//             Log::info('filemng alldwonload $rtn == true END');
-//             // 作成されたzipファイルをダウンロードしてディレクトリから削除
-//             return response()->download($fullpath, basename($fullpath), [])->deleteFileAfterSend(true);
-//         } else {
-//             // // 選択された顧客IDからCustomer情報(フォルダー名)を取得する
-//             // $customers  = $this->auth_user_foldername($customer_id);
-                
-//             // // 2023/08/18
-//             // $uploadusers = DB::table('uploadusers')
-//             //     ->where('customer_id','=',$customer_id)
-//             //     ->whereNull('deleted_at')
-//             //     ->first();
-
-//             // $compacts = compact( 'customers','admin_flg','uploadusers' );
-
-//             // Log::info('filemng alldwonload $rtn == false  END');
-
-//             // return view('filemng.post', $compacts );
-//         }
+        }
 
         Log::info('billdatahistory all_download END');
+
+        return redirect()->route('billdatahistory_in');
     }
+
+    /**
+     *    ret_query_count(): Queryを取得 Count用
+     *    $organization_id : 組織ID
+     *    $nowyear         : 選択年
+     *    $nowmonth        : 選択月
+     */
+    public function ret_query_count($organization_id, $nowyear, $nowmonth)
+    {
+        Log::info('billdatahistory ret_query_count START');
+
+        // count sql
+        $query = '';
+        $query .= 'select count(*) AS count ';
+        $query .= 'from billdatas ';
+        $query .= 'where ';
+        if($organization_id == 0) {
+            $query .=  ' (billdatas.organization_id >= %organization_id%) AND';
+        } else {
+            $query .=  ' (billdatas.organization_id = %organization_id%) AND';
+        }
+
+        $query .=  ' (billdatas.deleted_at is NULL ) AND ';
+        $query .=  ' (billdatas.year = %nowyear% ) AND ';
+        $query .=  ' (billdatas.mon = %nowmonth% ) ';
+
+        // $query .=  ' GROUP BY id; ';
+
+        $query  = str_replace('%organization_id%', $organization_id, $query);
+        $query  = str_replace('%nowyear%',         $nowyear,         $query);
+        $query  = str_replace('%nowmonth%',        $nowmonth,        $query);
+
+        $billdatas = DB::select($query);
+        $count     = $billdatas[0]->count;
+
+        Log::info('billdatahistory ret_query_count END');
+
+        Log::debug('billdatahistory ret_query_count $query = ' .print_r($query,true));
+
+        return $count;
+    }
+
+    /**
+     *    billdataGet()    : Queryを取得 select用
+     *    $organization_id : 組織ID
+     *    $nowyear         : 選択年
+     *    $nowmonth        : 選択月
+     */
+    public function billdataGet($organization_id, $nowyear, $nowmonth)
+    {
+        Log::info('billdatahistory billdataGet START');
+
+        // count sql
+        $query = '';
+        $query .= 'select * ';
+        $query .= 'from billdatas ';
+        $query .= 'where ';
+        if($organization_id == 0) {
+            $query .=  ' (billdatas.organization_id >= %organization_id%) AND';
+        } else {
+            $query .=  ' (billdatas.organization_id = %organization_id%) AND';
+        }
+
+        $query .=  ' (billdatas.deleted_at is NULL ) AND ';
+        $query .=  ' (billdatas.year = %nowyear% ) AND ';
+        $query .=  ' (billdatas.mon = %nowmonth% ) ';
+
+        $query  = str_replace('%organization_id%', $organization_id, $query);
+        $query  = str_replace('%nowyear%',         $nowyear,         $query);
+        $query  = str_replace('%nowmonth%',        $nowmonth,        $query);
+
+        $billdatas = DB::select($query);
+
+        Log::info('billdatahistory billdataGet END');
+
+        return $billdatas;
+    }
+
+
+
 }

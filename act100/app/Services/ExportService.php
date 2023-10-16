@@ -6,14 +6,14 @@ use App\Models\Billdata;
 
 use PhpOffice\PhpSpreadsheet\Reader\Xlsx as XlsxReader;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx as XlsxWriter;
-use PhpOffice\PhpSpreadsheet\IOFactory;
+// use PhpOffice\PhpSpreadsheet\IOFactory;
 use Maatwebsite\Excel\Facades\Excel;
 
-use Illuminate\Http\Request;
+// use Illuminate\Http\Request;
 
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Storage;
+// use Illuminate\Support\Facades\Storage;
 
 class ExportService
 {
@@ -36,6 +36,7 @@ class ExportService
      */
     public function makeXlsPdf(
                         $nowyear,
+                        $nowmonth,
                         $tourokuno,
                         $tekiyou,
                         $furibi,
@@ -43,9 +44,9 @@ class ExportService
                         $from_repres,
                         $kanrino,
                         $tanka,
-                        $to_company, 
-                        $to_represent, 
-                        $foloder_name, 
+                        $to_company,
+                        $to_represent,
+                        $foloder_name,
                         $file_name,
                         $customers_id
                     )
@@ -74,7 +75,7 @@ class ExportService
         $worksheet->setCellValue('K22', $tanka);
         // セルに指定した値挿入 B22 適用欄
         $worksheet->setCellValue('B22', $tekiyou);
-        // セルに指定した値挿入 C5 会社名 
+        // セルに指定した値挿入 C5 会社名
         $worksheet->setCellValue('C5', $to_company);
         // セルに指定した値挿入 C6 代表者名
         $worksheet->setCellValue('C6', $to_represent. ' 様');
@@ -106,7 +107,7 @@ class ExportService
             $extension_flg      = 1;
             $extension_filename = $file_name . '.xlsx';
             $ins_path = 'public/invoice/xls/'. $foloder_name. '/'. $file_name. '.xlsx';
-            $this->billdataUpdate($nowyear, $ins_path, $extension_filename, $customers_id, $filesize, $extension_flg);
+            $this->billdataUpdate($nowyear, $nowmonth, $ins_path, $extension_filename, $customers_id, $filesize, $extension_flg);
 
             // ExcelファイルをPDFに変換するコード
             $pdf_path = $this->convertOfficeToPdf($file_name, $foloder_name, $export_xls_path);
@@ -118,7 +119,7 @@ class ExportService
                 $extension_flg      = 2;
                 $extension_filename = $file_name . '.pdf';
                 $ins_path = 'public/invoice/pdf/'. $foloder_name. '/'. $file_name. '.pdf';
-                $this->billdataUpdate($nowyear, $ins_path, $extension_filename, $customers_id, $filesize, $extension_flg);
+                $this->billdataUpdate($nowyear, $nowmonth, $ins_path, $extension_filename, $customers_id, $filesize, $extension_flg);
             }
         }
 
@@ -181,7 +182,7 @@ class ExportService
         return file_exists($pdf_path) ? $pdf_path : null;
     }
 
-    public function billdataUpdate($nowyear, $filepath, $fileName, $customers_id, $filesize, $extension_flg)
+    public function billdataUpdate($nowyear, $nowmonth, $filepath, $fileName, $customers_id, $filesize, $extension_flg)
     {
         Log::info('ExportService  billdataUpdate START');
 
@@ -191,6 +192,7 @@ class ExportService
 
             $billdata = new Billdata();
             $billdata->year            = $nowyear;
+            $billdata->mon             = $nowmonth;
             $billdata->filepath        = $filepath;
             $billdata->filename        = $fileName;
             $billdata->organization_id = 1;
