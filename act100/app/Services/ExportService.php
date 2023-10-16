@@ -22,6 +22,7 @@ class ExportService
     /**
      *    makeXlsPdf()    : Excelを作成しPDFに変換
      *    $nowyear        : 年
+     *    $nowmonth       : 月
      *    $tourokuno      : 登録番号
      *    $tekiyou        : 摘要名
      *    $furibi         : 振込日
