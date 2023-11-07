@@ -41,6 +41,21 @@ return [
         'type' => 'warning',
         'text' => '対象データがありません',
     ],
+    // 2023/10/10
+    'invoice_warning' => [
+        'type' => 'warning',
+        'text' => '今月の請求データはありません',
+    ],
+    // 2023/10/10
+    'invoice_success' => [
+        'type' => 'success',
+        'text' => '請求データ作成処理が正常に完了しました',
+    ],
+    // 2023/11/04
+    'line_success' => [
+        'type' => 'success',
+        'text' => 'LINEから体験者が登録されました',
+    ],
     'custom_warning' => [
         'type' => 'warning',
         'text' => '対象の会社はありません',
