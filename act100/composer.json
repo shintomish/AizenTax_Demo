@@ -8,6 +8,7 @@
         "php": "^8.0.2",
         "barryvdh/laravel-cors": "^3.0",
         "barryvdh/laravel-debugbar": "^3.7",
+        "barryvdh/laravel-dompdf": "^2.0",
         "flowjs/flow-php-server": "^1.2",
         "guzzlehttp/guzzle": "^7.2",
         "kyslik/column-sortable": "^6.4",
@@ -16,6 +17,7 @@
         "laravel/sanctum": "^3.0",
         "laravel/tinker": "^2.7",
         "laravel/ui": "^4.0",
+        "linecorp/line-bot-sdk": "7.*",
         "maatwebsite/excel": "3.1.48",
         "pusher/pusher-php-server": "^7.2",
         "stechstudio/laravel-zipstream": "^4.8"
