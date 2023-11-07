@@ -154,7 +154,6 @@
                             </li>
                             <li class="nav-item">
                                 <a class="nav-link" href="{{route('ctluserindex')}}">
-                                    {{-- <span data-feather="users"></span> --}}
                                     <i class="fas fa-users"></i>
                                     複数法人
                                 </a>
@@ -167,17 +166,32 @@
                             </li>
 
                             {{-- 2022/10/24 --}}
-                            {{-- <li class="nav-item">
+                            <li class="nav-item">
                                 <a class="nav-link" href="{{route('chatin')}}">
                                     <i class="fas fa-wifi"></i>
                                     チャット
                                 </a>
-                            </li> --}}
+                            </li>
+
                             {{-- 2023/09/04 以下「顧客ログイン状態」追加--}}
                             <li class="nav-item">
                                 <a class="nav-link" href="{{route('operationindex')}}">
                                     <i class="fas fa-clipboard"></i>
                                     顧客ログイン状態
+                                </a>
+                            </li>
+
+                            <li class="nav-item">
+                                <a class="nav-link" href="{{route('linetrialuser.input')}}">
+                                    <i class="fas fa-edit"></i>
+                                    <span style="color:blue">体験者名簿</span>
+                                </a>
+                            </li>
+
+                            <li class="nav-item">
+                                <a class="nav-link" href="{{route('linetrialuserhistory.index')}}">
+                                    <i class="fas fa-edit"></i>
+                                    <span style="color:blue">体験者請求書</span>
                                 </a>
                             </li>
 
@@ -390,7 +404,16 @@
                                 <h3>会社申請・設立</h3>
 
                                 @break;
+                            @case ('linetrialuser')
+                                <!-- タイトル -->
+                                <h3>体験者名簿</h3>
 
+                                @break;
+                            @case ('linetrialuserhistory')
+                                <!-- タイトル -->
+                                <h3>体験者請求書</h3>
+
+                                @break;
                             @default:
                                 @break;
                         @endswitch
@@ -400,6 +423,12 @@
                             @method('get')
                             <div class='btn-toolbar' role="toolbar">
                                 <div class="input-group">
+
+                                    @if( $common_no == 'linetrialuser' || $common_no == 'linetrialuserhistory')
+                        {{-- <div class="btn-group me-2 mb-0">
+                            <a id="start2" style="margin-bottom:5px;" class="btn btn-success btn-sm mr-auto" href="">請求書作成</a>
+                        </div> --}}
+                                    @endif
                                     <!-- 年あり 月あり 顧客名あり -->
                                     <!-- 顧問料金 06 -->
                                     @if( $common_no == '06')
@@ -527,7 +556,7 @@
                                         </select>
                                         <button type="submit" class="btn btn-secondary btn_sm">検索</button>
                                     @else
-                                        @if( $common_no == '00_3' )
+                                        @if( $common_no == '00_3' || $common_no == 'linetrialuser' || $common_no == 'linetrialuserhistory')
                                         @else
                                             <input type="text" value="{{$keyword2}}" name="keyword" class="form-control" placeholder="顧客名検索">
                                             <div class="input-group-append">
