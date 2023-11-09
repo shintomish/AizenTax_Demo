@@ -87,7 +87,7 @@
     </style>
 
     {{-- Line --}}
-    <hr class="mb-4">
+    {{-- <hr class="mb-4"> --}}
 
     <div class="table-responsive">
 
