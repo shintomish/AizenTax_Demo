@@ -30,7 +30,7 @@ class LineWebhookController extends Controller
         //     client: $client,
         //     config: $config,
         // );
-        // Log::debug('LineWebhookController message  events = ' . print_r($events,true));
+        Log::debug('LineWebhookController message $events = ' . print_r($events,true));
 
         // composer require "linecorp/line-bot-sdk:7.*"
         $httpClient = new CurlHTTPClient(config('services.line.message.channel_token'));
@@ -38,19 +38,19 @@ class LineWebhookController extends Controller
 
         foreach ($events as $event) {
             // メッセージの保存処理を追記
-            // LineMessage::create([
+            // Line_Message::create([
             //     'line_user_id'    => $event['source']['userId'],
             //     'line_message_id' => $event['message']['id'],
             //     'text'            => $event['message']['text'],
             // ]);
+
+            // Log::debug('LineWebhookController message $event = ' . print_r($event,true));
 
             $updata['count'] = Line_Message::where('line_user_id', $event['source']['userId'])->count();
             if( $updata['count'] > 0 ) {
                 // Log::debug('LineWebhookController message [count] = ' . print_r($updata['count'],true));
 
             } else {
-                Log::debug('LineWebhookController message [count] = ' . print_r($updata['count'],true));
-
                 $line_message = new Line_Message();
                 $line_message->line_user_id    = $event['source']['userId'];
                 $line_message->line_message_id = $event['message']['id'];
@@ -65,7 +65,7 @@ class LineWebhookController extends Controller
                 $trial_user->users_name      = $line_message->text;
                 $trial_user->save();               //  Inserts
                 $response = $bot->replyText($event['replyToken'], $msg);
-    
+
             }
 
         }
