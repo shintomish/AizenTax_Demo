@@ -110,9 +110,9 @@
                 <tr>
                     <th scope="col" class ="fixed01">ID</th>
                     <th scope="col" class ="fixed01">体験者名</th>
-                    <th scope="col" class ="fixed01">領収書作成</th>
                     <th scope="col" class ="fixed01">予約時間</th>
                     <th scope="col" class ="fixed01">登録日</th>
+                    <th scope="col">@sortablelink('urgent_flg', '領収書作成状況')</th>
                     <th scope="col" class ="fixed01">操作</th>
                 </tr>
             </thead>
@@ -135,21 +135,6 @@
                             <input type="text" class="form-control" id="users_name_{{$linetrialuser->id}}" name="users_name_{{$linetrialuser->id}}" value="{{$str}}">
                         </td>
 
-                        {{-- 領収書作成状況 1:未 2:済 --}}
-                        @php
-                            if($linetrialuser->urgent_flg == 1){
-                                $str1 = '未作成';
-                                $textcolor = 'text-danger';
-                            }else{
-                                $str1 = '作成済';
-                                $textcolor = 'text-secondary';
-                            }
-                        @endphp
-                        <td>
-                            <h6>
-                                <p class={{ $textcolor }}>{{ $str1 }}</p>
-                            </h6>
-                        </td>
                             {{-- <select class="custom-select" id="contract_entity_{{$linetrialuser->id}}" name="contract_entity_{{$linetrialuser->id}}">
                                 <option value="1" {{ $linetrialuser->urgent_flg == 1 ? 'selected' : '' }}>未</option>
                                 <option value="2" {{ $linetrialuser->urgent_flg == 2 ? 'selected' : '' }}>済</option>
@@ -175,6 +160,22 @@
                             }
                         @endphp
                         <td>{{ $str3 }}</td>
+
+                        {{-- 領収書作成状況 1:未 2:済 --}}
+                        @php
+                            if($linetrialuser->urgent_flg == 1){
+                                $str1 = '未作成';
+                                $textcolor = 'text-danger';
+                            }else{
+                                $str1 = '作成済';
+                                $textcolor = 'text-secondary';
+                            }
+                        @endphp
+                        <td>
+                            <h6>
+                                <p class={{ $textcolor }}>{{ $str1 }}</p>
+                            </h6>
+                        </td>
 
                         <td>
                             <div class="btn-toolbar">
