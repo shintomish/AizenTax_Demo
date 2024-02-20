@@ -1,0 +1,80 @@
+[Sat Feb 03 03:13:01.607649 2024] [ssl:warn] [pid 743733:tid 140144486119744] AH01909: www.test.tax-affairs.jp:443:0 server certificate does NOT include an ID which matches the server name
+[Sat Feb 03 03:13:01.607854 2024] [lbmethod_heartbeat:notice] [pid 743733:tid 140144486119744] AH02282: No slotmem from mod_heartmonitor
+[Sat Feb 03 03:13:01.609289 2024] [mpm_event:notice] [pid 743733:tid 140144486119744] AH00489: Apache/2.4.37 (AlmaLinux) OpenSSL/1.1.1k configured -- resuming normal operations
+[Sat Feb 03 03:13:01.609321 2024] [core:notice] [pid 743733:tid 140144486119744] AH00094: Command line: '/usr/sbin/httpd -D FOREGROUND'
+[Sat Feb 03 14:36:14.533245 2024] [mpm_event:notice] [pid 743733:tid 140144486119744] AH00492: caught SIGWINCH, shutting down gracefully
+[Sat Feb 03 14:36:15.604250 2024] [suexec:notice] [pid 3289460:tid 139653590567232] AH01232: suEXEC mechanism enabled (wrapper: /usr/sbin/suexec)
+[Sat Feb 03 14:36:15.605227 2024] [ssl:warn] [pid 3289460:tid 139653590567232] AH01909: www.test.tax-affairs.jp:443:0 server certificate does NOT include an ID which matches the server name
+[Sat Feb 03 14:36:15.619467 2024] [ssl:warn] [pid 3289460:tid 139653590567232] AH01909: www.test.tax-affairs.jp:443:0 server certificate does NOT include an ID which matches the server name
+[Sat Feb 03 14:36:15.619591 2024] [lbmethod_heartbeat:notice] [pid 3289460:tid 139653590567232] AH02282: No slotmem from mod_heartmonitor
+[Sat Feb 03 14:36:15.625810 2024] [mpm_event:notice] [pid 3289460:tid 139653590567232] AH00489: Apache/2.4.37 (AlmaLinux) OpenSSL/1.1.1k configured -- resuming normal operations
+[Sat Feb 03 14:36:15.625839 2024] [core:notice] [pid 3289460:tid 139653590567232] AH00094: Command line: '/usr/sbin/httpd -D FOREGROUND'
+[Sat Feb 03 14:38:38.193821 2024] [mpm_event:notice] [pid 3289460:tid 139653590567232] AH00492: caught SIGWINCH, shutting down gracefully
+[Sat Feb 03 14:38:39.273059 2024] [suexec:notice] [pid 3289706:tid 140264677833024] AH01232: suEXEC mechanism enabled (wrapper: /usr/sbin/suexec)
+[Sat Feb 03 14:38:39.274067 2024] [ssl:warn] [pid 3289706:tid 140264677833024] AH01909: www.test.tax-affairs.jp:443:0 server certificate does NOT include an ID which matches the server name
+[Sat Feb 03 14:38:39.288489 2024] [ssl:warn] [pid 3289706:tid 140264677833024] AH01909: www.test.tax-affairs.jp:443:0 server certificate does NOT include an ID which matches the server name
+[Sat Feb 03 14:38:39.288625 2024] [lbmethod_heartbeat:notice] [pid 3289706:tid 140264677833024] AH02282: No slotmem from mod_heartmonitor
+[Sat Feb 03 14:38:39.295739 2024] [mpm_event:notice] [pid 3289706:tid 140264677833024] AH00489: Apache/2.4.37 (AlmaLinux) OpenSSL/1.1.1k configured -- resuming normal operations
+[Sat Feb 03 14:38:39.295778 2024] [core:notice] [pid 3289706:tid 140264677833024] AH00094: Command line: '/usr/sbin/httpd -D FOREGROUND'
+[Sat Feb 03 14:41:11.153307 2024] [mpm_event:notice] [pid 3289706:tid 140264677833024] AH00492: caught SIGWINCH, shutting down gracefully
+[Sat Feb 03 14:41:12.232946 2024] [suexec:notice] [pid 3289958:tid 139952864745792] AH01232: suEXEC mechanism enabled (wrapper: /usr/sbin/suexec)
+[Sat Feb 03 14:41:12.233914 2024] [ssl:warn] [pid 3289958:tid 139952864745792] AH01909: www.test.tax-affairs.jp:443:0 server certificate does NOT include an ID which matches the server name
+[Sat Feb 03 14:41:12.248205 2024] [ssl:warn] [pid 3289958:tid 139952864745792] AH01909: www.test.tax-affairs.jp:443:0 server certificate does NOT include an ID which matches the server name
+[Sat Feb 03 14:41:12.248351 2024] [lbmethod_heartbeat:notice] [pid 3289958:tid 139952864745792] AH02282: No slotmem from mod_heartmonitor
+[Sat Feb 03 14:41:12.255713 2024] [mpm_event:notice] [pid 3289958:tid 139952864745792] AH00489: Apache/2.4.37 (AlmaLinux) OpenSSL/1.1.1k configured -- resuming normal operations
+[Sat Feb 03 14:41:12.255748 2024] [core:notice] [pid 3289958:tid 139952864745792] AH00094: Command line: '/usr/sbin/httpd -D FOREGROUND'
+[Sat Feb 03 14:44:25.452148 2024] [mpm_event:notice] [pid 3289958:tid 139952864745792] AH00492: caught SIGWINCH, shutting down gracefully
+[Sat Feb 03 14:44:26.528004 2024] [suexec:notice] [pid 3290223:tid 140236782590272] AH01232: suEXEC mechanism enabled (wrapper: /usr/sbin/suexec)
+[Sat Feb 03 14:44:26.528986 2024] [ssl:warn] [pid 3290223:tid 140236782590272] AH01909: www.test.tax-affairs.jp:443:0 server certificate does NOT include an ID which matches the server name
+[Sat Feb 03 14:44:26.544821 2024] [ssl:warn] [pid 3290223:tid 140236782590272] AH01909: www.test.tax-affairs.jp:443:0 server certificate does NOT include an ID which matches the server name
+[Sat Feb 03 14:44:26.544973 2024] [lbmethod_heartbeat:notice] [pid 3290223:tid 140236782590272] AH02282: No slotmem from mod_heartmonitor
+[Sat Feb 03 14:44:26.552107 2024] [mpm_event:notice] [pid 3290223:tid 140236782590272] AH00489: Apache/2.4.37 (AlmaLinux) OpenSSL/1.1.1k configured -- resuming normal operations
+[Sat Feb 03 14:44:26.552211 2024] [core:notice] [pid 3290223:tid 140236782590272] AH00094: Command line: '/usr/sbin/httpd -D FOREGROUND'
+[Sat Feb 03 14:48:45.465462 2024] [mpm_event:notice] [pid 3290223:tid 140236782590272] AH00492: caught SIGWINCH, shutting down gracefully
+[Sat Feb 03 14:49:20.507326 2024] [suexec:notice] [pid 817:tid 140156759116096] AH01232: suEXEC mechanism enabled (wrapper: /usr/sbin/suexec)
+[Sat Feb 03 14:49:20.510412 2024] [ssl:warn] [pid 817:tid 140156759116096] AH01909: www.test.tax-affairs.jp:443:0 server certificate does NOT include an ID which matches the server name
+[Sat Feb 03 14:49:20.553902 2024] [ssl:warn] [pid 817:tid 140156759116096] AH01909: www.test.tax-affairs.jp:443:0 server certificate does NOT include an ID which matches the server name
+[Sat Feb 03 14:49:20.554077 2024] [lbmethod_heartbeat:notice] [pid 817:tid 140156759116096] AH02282: No slotmem from mod_heartmonitor
+[Sat Feb 03 14:49:20.592571 2024] [mpm_event:notice] [pid 817:tid 140156759116096] AH00489: Apache/2.4.37 (AlmaLinux) OpenSSL/1.1.1k configured -- resuming normal operations
+[Sat Feb 03 14:49:20.592639 2024] [core:notice] [pid 817:tid 140156759116096] AH00094: Command line: '/usr/sbin/httpd -D FOREGROUND'
+[Sat Feb 03 14:51:16.408832 2024] [mpm_event:notice] [pid 817:tid 140156759116096] AH00492: caught SIGWINCH, shutting down gracefully
+[Sat Feb 03 14:51:17.481553 2024] [suexec:notice] [pid 1554:tid 139861127104832] AH01232: suEXEC mechanism enabled (wrapper: /usr/sbin/suexec)
+[Sat Feb 03 14:51:17.482510 2024] [ssl:warn] [pid 1554:tid 139861127104832] AH01909: www.test.tax-affairs.jp:443:0 server certificate does NOT include an ID which matches the server name
+[Sat Feb 03 14:51:17.498304 2024] [ssl:warn] [pid 1554:tid 139861127104832] AH01909: www.test.tax-affairs.jp:443:0 server certificate does NOT include an ID which matches the server name
+[Sat Feb 03 14:51:17.498445 2024] [lbmethod_heartbeat:notice] [pid 1554:tid 139861127104832] AH02282: No slotmem from mod_heartmonitor
+[Sat Feb 03 14:51:17.505639 2024] [mpm_event:notice] [pid 1554:tid 139861127104832] AH00489: Apache/2.4.37 (AlmaLinux) OpenSSL/1.1.1k configured -- resuming normal operations
+[Sat Feb 03 14:51:17.505682 2024] [core:notice] [pid 1554:tid 139861127104832] AH00094: Command line: '/usr/sbin/httpd -D FOREGROUND'
+[Sat Feb 03 14:52:09.895211 2024] [mpm_event:notice] [pid 1554:tid 139861127104832] AH00492: caught SIGWINCH, shutting down gracefully
+[Sat Feb 03 14:52:19.970328 2024] [suexec:notice] [pid 1869:tid 139747820685632] AH01232: suEXEC mechanism enabled (wrapper: /usr/sbin/suexec)
+[Sat Feb 03 14:52:19.971070 2024] [ssl:warn] [pid 1869:tid 139747820685632] AH01909: www.test.tax-affairs.jp:443:0 server certificate does NOT include an ID which matches the server name
+[Sat Feb 03 14:52:19.985675 2024] [ssl:warn] [pid 1869:tid 139747820685632] AH01909: www.test.tax-affairs.jp:443:0 server certificate does NOT include an ID which matches the server name
+[Sat Feb 03 14:52:19.985820 2024] [lbmethod_heartbeat:notice] [pid 1869:tid 139747820685632] AH02282: No slotmem from mod_heartmonitor
+[Sat Feb 03 14:52:19.992633 2024] [mpm_event:notice] [pid 1869:tid 139747820685632] AH00489: Apache/2.4.37 (AlmaLinux) OpenSSL/1.1.1k configured -- resuming normal operations
+[Sat Feb 03 14:52:19.992701 2024] [core:notice] [pid 1869:tid 139747820685632] AH00094: Command line: '/usr/sbin/httpd -D FOREGROUND'
+[Sat Feb 03 14:55:08.701089 2024] [mpm_event:notice] [pid 1869:tid 139747820685632] AH00492: caught SIGWINCH, shutting down gracefully
+[Sat Feb 03 14:55:44.968665 2024] [suexec:notice] [pid 832:tid 140532539717952] AH01232: suEXEC mechanism enabled (wrapper: /usr/sbin/suexec)
+[Sat Feb 03 14:55:44.977349 2024] [ssl:warn] [pid 832:tid 140532539717952] AH01909: www.test.tax-affairs.jp:443:0 server certificate does NOT include an ID which matches the server name
+[Sat Feb 03 14:55:45.058067 2024] [ssl:warn] [pid 832:tid 140532539717952] AH01909: www.test.tax-affairs.jp:443:0 server certificate does NOT include an ID which matches the server name
+[Sat Feb 03 14:55:45.058272 2024] [lbmethod_heartbeat:notice] [pid 832:tid 140532539717952] AH02282: No slotmem from mod_heartmonitor
+[Sat Feb 03 14:55:45.112488 2024] [mpm_event:notice] [pid 832:tid 140532539717952] AH00489: Apache/2.4.37 (AlmaLinux) OpenSSL/1.1.1k configured -- resuming normal operations
+[Sat Feb 03 14:55:45.113836 2024] [core:notice] [pid 832:tid 140532539717952] AH00094: Command line: '/usr/sbin/httpd -D FOREGROUND'
+[Sat Feb 03 15:56:35.757205 2024] [mpm_event:notice] [pid 832:tid 140532539717952] AH00492: caught SIGWINCH, shutting down gracefully
+[Sat Feb 03 15:56:36.836747 2024] [suexec:notice] [pid 3224:tid 139805664467264] AH01232: suEXEC mechanism enabled (wrapper: /usr/sbin/suexec)
+[Sat Feb 03 15:56:36.837765 2024] [ssl:warn] [pid 3224:tid 139805664467264] AH01909: www.test.tax-affairs.jp:443:0 server certificate does NOT include an ID which matches the server name
+[Sat Feb 03 15:56:36.852515 2024] [ssl:warn] [pid 3224:tid 139805664467264] AH01909: www.test.tax-affairs.jp:443:0 server certificate does NOT include an ID which matches the server name
+[Sat Feb 03 15:56:36.852642 2024] [lbmethod_heartbeat:notice] [pid 3224:tid 139805664467264] AH02282: No slotmem from mod_heartmonitor
+[Sat Feb 03 15:56:36.859455 2024] [mpm_event:notice] [pid 3224:tid 139805664467264] AH00489: Apache/2.4.37 (AlmaLinux) OpenSSL/1.1.1k configured -- resuming normal operations
+[Sat Feb 03 15:56:36.859494 2024] [core:notice] [pid 3224:tid 139805664467264] AH00094: Command line: '/usr/sbin/httpd -D FOREGROUND'
+[Sat Feb 03 16:08:03.117877 2024] [mpm_event:notice] [pid 3224:tid 139805664467264] AH00492: caught SIGWINCH, shutting down gracefully
+[Sat Feb 03 16:08:04.185421 2024] [suexec:notice] [pid 3650:tid 140089434532160] AH01232: suEXEC mechanism enabled (wrapper: /usr/sbin/suexec)
+[Sat Feb 03 16:08:04.191511 2024] [ssl:emerg] [pid 3650:tid 140089434532160] AH02565: Certificate and private key www.trial-session.com:443:0 from /etc/pki/tls/certs/server.crt and /etc/pki/tls/private/server.key do not match
+AH00016: Configuration Failed
+[Sat Feb 03 16:09:32.130059 2024] [suexec:notice] [pid 3668:tid 140666525284672] AH01232: suEXEC mechanism enabled (wrapper: /usr/sbin/suexec)
+[Sat Feb 03 16:09:32.131122 2024] [ssl:emerg] [pid 3668:tid 140666525284672] AH02565: Certificate and private key www.trial-session.com:443:0 from /etc/pki/tls/certs/server.crt and /etc/pki/tls/private/server.key do not match
+AH00016: Configuration Failed
+[Sat Feb 03 16:14:30.323430 2024] [suexec:notice] [pid 3736:tid 139824302127424] AH01232: suEXEC mechanism enabled (wrapper: /usr/sbin/suexec)
+[Sat Feb 03 16:14:30.324352 2024] [ssl:emerg] [pid 3736:tid 139824302127424] AH02565: Certificate and private key www.trial-session.com:443:0 from /etc/pki/tls/certs/server.crt and /etc/pki/tls/private/server.key do not match
+AH00016: Configuration Failed
+[Sat Feb 03 16:17:45.964033 2024] [suexec:notice] [pid 3779:tid 139688312580416] AH01232: suEXEC mechanism enabled (wrapper: /usr/sbin/suexec)
+[Sat Feb 03 16:17:45.965187 2024] [ssl:emerg] [pid 3779:tid 139688312580416] AH02565: Certificate and private key www.trial-session.com:443:0 from /etc/pki/tls/certs/server.crt and /etc/pki/tls/private/server.key do not match
+AH00016: Configuration Failed

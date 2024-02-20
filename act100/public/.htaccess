@@ -4,8 +4,11 @@
     </IfModule>
 
     RewriteEngine On
+    
+    ### RewriteCond %{HTTP_HOST} !^www\.
+    ### RewriteRule ^(.*)$ http://www.%{HTTP_HOST}/$1 [R=301,L]
 
-    ### 2023/12/04 wwwありで統一するかつhttpsにリダイレクト設定をする
+    ### 2023/12/02 wwwありで統一するかつhttpsにリダイレクト設定をする
     RewriteCond %{HTTPS} off
     RewriteRule ^(.*)$ https://%{HTTP_HOST}%{REQUEST_URI} [R=301,L]
     RewriteCond %{HTTP_HOST} !^www\. [NC]
