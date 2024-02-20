@@ -437,19 +437,19 @@
                         <div class="btn-group me-2 mb-0">
                             <a id="start2" style="margin-bottom:5px;" class="btn btn-success btn-sm mr-auto" href="{{route('excelexp')}}">請求書作成</a>
                         </div>
-                                    <select style="margin-right:5px;" class="custom-select" id="year" name="year">
-                                        @foreach ($loop_year_flg as $loop_year_flg2)
-                                            @if ($loop_year_flg2['no']==0)
-                                                <option disabled value="{{ $loop_year_flg2['no'] }}">{{ $loop_year_flg2['name'] }}</option>
-                                            @else
-                                                @if ($loop_year_flg2['no']==$nowyear)
-                                                    <option selected value="{{ $loop_year_flg2['no'] }}">{{ $loop_year_flg2['name'] }}</option>
-                                                @else
-                                                    <option disabled value="{{ $loop_year_flg2['no'] }}">{{ $loop_year_flg2['name'] }}</option>
-                                                @endif
-                                            @endif
-                                        @endforeach
-                                    </select>
+                        <select style="margin-right:5px;" class="custom-select" id="year" name="year">
+                            @foreach ($loop_year_flg as $loop_year_flg2)
+                                @if ($loop_year_flg2['no']==0)
+                                    <option disabled value="{{ $loop_year_flg2['no'] }}">{{ $loop_year_flg2['name'] }}</option>
+                                @else
+                                    @if ($loop_year_flg2['no']==$nowyear)
+                                        <option selected value="{{ $loop_year_flg2['no'] }}">{{ $loop_year_flg2['name'] }}</option>
+                                    @else
+                                        <option value="{{ $loop_year_flg2['no'] }}">{{ $loop_year_flg2['name'] }}</option>
+                                    @endif
+                                @endif
+                            @endforeach
+                        </select>
 
                                     <select style="margin-right:5px;" class="custom-select" id="month" name="month">
                                         @foreach ($loop_month_flg as $loop_month_flg2)
@@ -459,7 +459,7 @@
                                                 @if ($loop_month_flg2['no']==$nowmonth)
                                                     <option selected value="{{ $loop_month_flg2['no'] }}">{{ $loop_month_flg2['name'] }}</option>
                                                 @else
-                                                    <option disabled value="{{ $loop_month_flg2['no'] }}">{{ $loop_month_flg2['name'] }}</option>
+                                        <option value="{{ $loop_month_flg2['no'] }}">{{ $loop_month_flg2['name'] }}</option>
                                                 @endif
                                             @endif
                                         @endforeach
