@@ -11,9 +11,15 @@ use App\Models\Line_Trial_Users;
 
 use LINE\LINEBot\HTTPClient\CurlHTTPClient;
 use LINE\LINEBot;
-
+use GuzzleHttp\Client;
 class LineWebhookController extends Controller
 {
+    public function __construct()
+    {
+        // .envからアクセストークンを取得してプロパティに格納
+        $this->channelToken = env('LINE_MESSAGE_CHANNEL_TOKEN');
+    }
+
     //
     public function message(Request $request) {
 
@@ -61,31 +67,25 @@ class LineWebhookController extends Controller
                             $trial_user->users_name      = $line_message->text;
                             $trial_user->save();               //  Inserts
 
-                            // 自動返信 2023/11/12 Skip
-                            // $msg = "体験会ご予約承りました。" . "\n". "\n";
-                            // $msg .= "体験会ブースにお越し頂いてから、" . "\n";
-                            // $msg .= "ご希望の予約時間を登録致します。";
-                            // $response = $bot->replyText($event['replyToken'], $msg);
-                            
-                            // 自動返信 2024/06/02 ワークファンルーム
-                            // $msg = "ドローン体験会ご予約承りました。" . "\n". "\n";
-                            // $msg .= "担当者より随時ご案内いたします。" . "\n";
-                            // $msg .= "今しばらくお待ちください。";
-                            // $response = $bot->replyText($event['replyToken'], $msg);
-
-                            // 自動返信 2024/11/10 Skip
-                            // $msg = "体験会ご予約承りました。" . "\n". "\n";
-                            // $msg .= "体験会ブースにお越し頂いてから、" . "\n";
-                            // $msg .= "ご希望の予約時間を登録致します。";
-
-                            // 自動返信 2024/12/07 会社体験会
                             $msg = "体験会ご予約承りました。" . "\n". "\n";
                             $msg .= "担当者より随時ご案内いたします。" . "\n";
                             $msg .= "今しばらくお待ちください。";
-                            $response = $bot->replyText($event['replyToken'], $msg);
+                            $bot->replyText($event['replyToken'], $msg);
                         }
                         else{
-                            Log::info('LineWebhookController message case text $updata[count] = ' . print_r($updata['count'], true));
+                            $events = $request->input('events');
+                            $replyToken = $event['replyToken'];
+                            $userMessage = $event['message']['text'];
+                    
+                            // メッセージ分類
+                            if (strpos($userMessage, '価格') !== false) {
+                                $this->replyPriceMessage($bot, $replyToken, $userMessage);
+                            } else {
+                                $this->replyNormalMessage($bot, $replyToken);
+                            }
+                            Log::info('LineWebhookController message case text $userMessage = ' . print_r($userMessage, true));
+
+                            return response()->json(['status' => 'success']);
                         }
 
                         break;
@@ -104,7 +104,102 @@ class LineWebhookController extends Controller
         Log::info('LineWebhookController message END');
         return 'ok';
     }
+    private function replyPriceMessage($bot,$replyToken, $userMessage)
+    {
+        // 商品名を抽出 (例: "価格 シャンプー")
+        $productName = str_replace('価格 ', '', $userMessage);
+        $price = $this->getPriceByProductName($productName);
 
+        $flexMessage = [
+            'type' => 'flex',
+            'altText' => '価格情報',
+            'contents' => [
+                'type' => 'bubble',
+                'body' => [
+                    'type' => 'box',
+                    'layout' => 'vertical',
+                    'contents' => [
+                        [
+                            'type' => 'text',
+                            'text' => "商品名: $productName",
+                            'weight' => 'bold',
+                            'size' => 'xl',
+                        ],
+                        [
+                            'type' => 'text',
+                            'text' => "価格: ¥$price",
+                            'size' => 'md',
+                            'color' => '#555555',
+                        ],
+                    ],
+                ],
+            ],
+        ];
+        // $bot->replyText($replyToken, $flexMessage);
+        $this->sendReplyMessage($replyToken, $flexMessage);
+    }
+
+    private function replyNormalMessage($bot,$replyToken)
+    {
+        $buttonsTemplate = [
+            'type' => 'template',
+            'altText' => '問い合わせメニュー',
+            'template' => [
+                'type' => 'buttons',
+                // 'thumbnailImageUrl' => 'https://example.com/image.jpg',
+                'title' => 'お問い合わせ',
+                'text' => '選択してください',
+                'actions' => [
+                    [
+                        'type' => 'message',
+                        'label' => '価格問い合わせ',
+                        'text' => '価格'
+                    ],
+                    [
+                        'type' => 'message',
+                        'label' => 'その他問い合わせ',
+                        'text' => 'その他'
+                    ],
+                ],
+            ],
+        ];
+
+        // $bot->replyText($replyToken, $buttonsTemplate);
+        $this->sendReplyMessage($replyToken, $buttonsTemplate);
+    }
+
+    private function getPriceByProductName($productName)
+    {
+        // ダミー価格データ (本番ではデータベースやAPIを参照)
+        $prices = [
+            'シャンプー' => 1200,
+            'リンス' => 1500,
+            '美容液' => 3000,
+        ];
+        // return $prices[$productName] . " です。" ?? '未登録です。';
+        return $prices[$productName] . " です。" ?? '商品の価格が見つかりません。';
+
+    }
+
+    private function sendReplyMessage($replyToken, $message)
+    {
+        $client = new Client();
+        $url = 'https://api.line.me/v2/bot/message/reply';
+        $headers = [
+            'Authorization' => "Bearer {$this->channelToken}",
+            'Content-Type' => 'application/json',
+        ];
+        $body = [
+            'replyToken' => $replyToken,
+            'messages' => [$message],
+        ];
+        // Log::info('LineWebhookController sendReplyMessage $headers = ' . print_r($headers, true));
+
+        $client->post($url, [
+            'headers' => $headers,
+            'json' => $body,
+        ]);
+    }
     // 2023/11/05 非同期で通知したかったが。。
     // $linetrialusers = Line_Trial_Users::whereNull('deleted_at')
     //     ->sortable()
