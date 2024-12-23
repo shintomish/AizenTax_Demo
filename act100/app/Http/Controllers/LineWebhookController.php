@@ -51,7 +51,7 @@ class LineWebhookController extends Controller
             if (isset($event['message']['type'])) {
                 switch ($event['message']['type']) {
                     case 'text':
-                        Log::info('LineWebhookController message case text userId = ' . print_r($event['source']['userId'], true));
+                        // Log::info('LineWebhookController message case text userId = ' . print_r($event['source']['userId'], true));
 
                         // $line_message = new Line_Message();
                         // $line_message->line_user_id    = $event['source']['userId'];
@@ -75,17 +75,14 @@ class LineWebhookController extends Controller
 
                         // 分岐処理
                         if (str_contains($userMessage, '価格')) {
-                            $this->replyPriceQuery($replyToken);
+                            $this->replyPriceQuery($event);
                         } elseif (str_contains($userMessage, '問い合わせ')) {
                             $this->replyNormalQuery($event);
                         } else {
-                            // $this->replyDefault($event,'Error');
+                            $this->replyDefault($event);
                         }
             
                         Log::info('LineWebhookController message $userMessage = ' . print_r($userMessage, true));
-                        Log::info('LineWebhookController message END');
-
-                        return response()->json(['status' => 'success']);
 
                         break;
                     case 'image':
@@ -101,7 +98,8 @@ class LineWebhookController extends Controller
         }
 
         Log::info('LineWebhookController message END');
-        return 'ok';
+        // return 'ok';
+        return response()->json(['status' => 'success']);
     }
     private function replyPriceQuery($replyToken)
     {
@@ -161,32 +159,35 @@ class LineWebhookController extends Controller
             ]
         );
 
-        // $yes_button = new PostbackTemplateActionBuilder('はい', 'button=1');
-        // $no_button = new PostbackTemplateActionBuilder('キャンセル', 'button=0');
-        // $actions = [$yes_button, $no_button];
-        // $button = new ButtonTemplateBuilder('お問い合わせ', 'テキスト', '', $actions);
+        $yes_button = new PostbackTemplateActionBuilder('はい', 'button=1');
+        $no_button = new PostbackTemplateActionBuilder('キャンセル', 'button=0');
+        $actions = [$yes_button, $no_button];
+        $button = new ButtonTemplateBuilder('お問い合わせ', 'テキスト', '', $actions);
 
         Log::info('LineWebhookController replyNormalQuery END');
 
-        $button_message = new TemplateMessageBuilder('お問い合わせ', $buttonTemplate);
+        $button_message = new TemplateMessageBuilder('お問い合わせ', $button);
         $this->bot->replyMessage($replyToken, $button_message);
     }
 
-    private function replyDefault($event,$message1)
+    private function replyDefault($event)
     {
         Log::info('LineWebhookController replyDefault START');
+
         $replyToken = $event['replyToken'];
-        // $message = new \LINE\LINEBot\MessageBuilder\TextMessageBuilder('申し訳ありませんが、そのリクエストには対応できません。');
+        $message = new TextMessageBuilder('申し訳ありませんが、そのリクエストには対応できません。');
         // $message1 = new TextMessageBuilder('申し訳ありませんが、そのリクエストには対応できません。');
 
-        Log::info('LineWebhookController replyDefault START');
+        Log::info('LineWebhookController replyDefault END');
 
-        $this->sendReplyMessage($replyToken, $message1);
+        $this->bot->replyMessage($replyToken, $message);
     }
 
 
     private function replyPriceMessage($replyToken, $userMessage)
     {
+        Log::info('LineWebhookController replyPriceMessage START');
+
         // 商品名を抽出 (例: "価格 シャンプー")
         $productName = str_replace('価格 ', '', $userMessage);
         $price = $this->getPriceByProductName($productName);
@@ -216,8 +217,10 @@ class LineWebhookController extends Controller
                 ],
             ],
         ];
+        Log::info('LineWebhookController replyPriceMessage END');
+
         // $bot->replyText($replyToken, $flexMessage);
-        $this->sendReplyMessage($replyToken, $flexMessage);
+        // $this->sendReplyMessage($replyToken, $flexMessage);
     }
 
     private function replyNormalMessage($replyToken)
