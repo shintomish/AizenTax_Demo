@@ -75,9 +75,13 @@ class LineWebhookController extends Controller
 
                         // 分岐処理
                         if (str_contains($userMessage, '価格')) {
-                            $this->replyPriceQuery($event);
+                            // $this->replyPriceQuery($event);
+                            // $this->replyPriceMessage($event,$userMessage);
+                            // 商品価格を返信するロジック
+                            $this->replyPriceMessage($replyToken, $userMessage);
                         } elseif (str_contains($userMessage, '問い合わせ')) {
-                            $this->replyNormalQuery($event);
+                            // $this->replyNormalQuery($event);
+                            $this->replyNormalMessage($event);
                         } else {
                             $this->replyDefault($event);
                         }
@@ -101,6 +105,8 @@ class LineWebhookController extends Controller
         // return 'ok';
         return response()->json(['status' => 'success']);
     }
+
+
     private function replyPriceQuery($replyToken)
     {
         Log::info('LineWebhookController replyPriceQuery START');
@@ -140,7 +146,8 @@ class LineWebhookController extends Controller
         ]);
 
         Log::info('LineWebhookController replyPriceQuery END');
-        $this->bot->replyMessage($replyToken, $flexMessage);
+        // $this->bot->replyMessage($replyToken, $flexMessage);
+        $this->bot->pushMessage($replyToken, $flexMessage);
     }
 
     private function replyNormalQuery($event)
@@ -164,10 +171,13 @@ class LineWebhookController extends Controller
         $actions = [$yes_button, $no_button];
         $button = new ButtonTemplateBuilder('お問い合わせ', 'テキスト', '', $actions);
 
+        $button_message = new TemplateMessageBuilder('お問い合わせ', $buttonTemplate);
+
         Log::info('LineWebhookController replyNormalQuery END');
 
-        $button_message = new TemplateMessageBuilder('お問い合わせ', $button);
-        $this->bot->replyMessage($replyToken, $button_message);
+        // $this->bot->replyMessage($replyToken, $button_message);
+        // $this->bot->pushMessage($replyToken, $button_message);
+        $this->sendReplyMessage($replyToken, $button_message);
     }
 
     private function replyDefault($event)
@@ -176,11 +186,12 @@ class LineWebhookController extends Controller
 
         $replyToken = $event['replyToken'];
         $message = new TextMessageBuilder('申し訳ありませんが、そのリクエストには対応できません。');
-        // $message1 = new TextMessageBuilder('申し訳ありませんが、そのリクエストには対応できません。');
 
         Log::info('LineWebhookController replyDefault END');
 
-        $this->bot->replyMessage($replyToken, $message);
+        $this->bot->replyMessage($replyToken, $message);        //OKだが resなし
+        // $this->bot->pushMessage($replyToken, $message);      //OKだが resなし
+        // $this->bot->replyText($replyToken, $message);        //OKだが resなし
     }
 
 
@@ -220,11 +231,12 @@ class LineWebhookController extends Controller
         Log::info('LineWebhookController replyPriceMessage END');
 
         // $bot->replyText($replyToken, $flexMessage);
-        // $this->sendReplyMessage($replyToken, $flexMessage);
+        $this->sendReplyMessage($replyToken, $flexMessage);
     }
 
     private function replyNormalMessage($replyToken)
     {
+        Log::info('LineWebhookController replyNormalMessage START');
         $buttonsTemplate = [
             'type' => 'template',
             'altText' => '問い合わせメニュー',
@@ -247,9 +259,10 @@ class LineWebhookController extends Controller
                 ],
             ],
         ];
+        Log::info('LineWebhookController replyNormalMessage END');
 
-        // $bot->replyText($replyToken, $buttonsTemplate);
-        $this->sendReplyMessage($replyToken, $buttonsTemplate);
+        $this->bot->replyText($replyToken, $buttonsTemplate);
+        // $this->sendReplyMessage($replyToken, $buttonsTemplate);     //the request body is invalid
     }
 
     private function getPriceByProductName($productName)
