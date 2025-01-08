@@ -7,31 +7,32 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 
 use App\Models\Line_Message;
-use App\Models\Line_Trial_Users;
+// use App\Models\Line_Trial_Users;
 
 use LINE\LINEBot;
 use LINE\LINEBot\HTTPClient\CurlHTTPClient;
-use LINE\LINEBot\MessageBuilder\TextMessageBuilder;
 use LINE\LINEBot\MessageBuilder\FlexMessageBuilder;
-use LINE\LINEBot\TemplateActionBuilder\PostbackTemplateActionBuilder;
-use LINE\LINEBot\TemplateActionBuilder\MessageTemplateActionBuilder;
-
-use LINE\LINEBot\MessageBuilder\TemplateMessageBuilder;
-use LINE\LINEBot\MessageBuilder\TemplateBuilder\ButtonTemplateBuilder;
-
-use GuzzleHttp\Client;
+use LINE\LINEBot\TemplateActionBuilder\UriTemplateActionBuilder;
+use LINE\LINEBot\MessageBuilder\Flex\ContainerBuilder\BubbleContainerBuilder;
+use LINE\LINEBot\MessageBuilder\Flex\ComponentBuilder\BoxComponentBuilder;
+use LINE\LINEBot\MessageBuilder\Flex\ComponentBuilder\TextComponentBuilder;
+use LINE\LINEBot\MessageBuilder\Flex\ComponentBuilder\ImageComponentBuilder;
+use LINE\LINEBot\MessageBuilder\Flex\ComponentBuilder\ButtonComponentBuilder;
+use LINE\LINEBot\MessageBuilder\Flex\ComponentBuilder\IconComponentBuilder;
+use LINE\LINEBot\Constant\Flex\ComponentLayout;
+use LINE\LINEBot\Constant\Flex\ComponentMargin;
+use LINE\LINEBot\Constant\Flex\ComponentSpacing;
+use LINE\LINEBot\Constant\Flex\ComponentButtonHeight;
 
 class LineWebhookController extends Controller
 {
     private $bot;
+    private $channelToken;
 
     public function __construct()
     {
-        // .envからアクセストークンを取得してプロパティに格納
+        // 1. LINE Bot SDKの初期化
         $this->channelToken = env('LINE_MESSAGE_CHANNEL_TOKEN');
-        $httpClient = new CurlHTTPClient(env('LINE_CHANNEL_ACCESS_TOKEN'));
-        $this->bot = new LINEBot($httpClient, ['channelSecret' => env('LINE_CHANNEL_SECRET')]);
-
     }
 
     //
@@ -39,54 +40,168 @@ class LineWebhookController extends Controller
 
         Log::info('LineWebhookController message START');
 
-        // $data   = $request->all();
-        // $events = $data['events'];
-        // $httpClient = new CurlHTTPClient(config('services.line.message.channel_token'));
-        // $bot = new LINEBot($httpClient, ['channelSecret' => config('services.line.message.channel_secret')]);
+        $httpClient = new CurlHTTPClient(env('LINE_CHANNEL_ACCESS_TOKEN'));
+        $bot = new LINEBot($httpClient, ['channelSecret' => env('LINE_CHANNEL_SECRET')]);
 
         $events = $request->events;
-
+        
         foreach ($events as $event) {
+            // 3. ユーザーID（送信先）を設定（例: $request->input('userId')で受け取る）
+            // $userId = $request->input('userId'); // 例: POSTリクエストから取得
+            $userId = $event['source']['userId']; // 例: POSTリクエストから取得
 
             if (isset($event['message']['type'])) {
                 switch ($event['message']['type']) {
                     case 'text':
                         // Log::info('LineWebhookController message case text userId = ' . print_r($event['source']['userId'], true));
 
-                        // $line_message = new Line_Message();
-                        // $line_message->line_user_id    = $event['source']['userId'];
-                        // $line_message->line_message_id = $event['message']['id'];
-                        // $line_message->text            = $event['message']['text'];
-                        // $line_message->save();               //  Inserts
-
-                        // $events = $request->input('events');
-                        // $replyToken = $event['replyToken'];
-                        // $userMessage = $event['message']['text'];
-                
-                        // // メッセージ分類
-                        // if (strpos($userMessage, '価格') !== false) {
-                        //     $this->replyPriceMessage($replyToken, $userMessage);
-                        // } else {
-                        //     $this->replyNormalMessage($replyToken);
-                        // }
-
                         $replyToken = $event['replyToken'];
                         $userMessage = $event['message']['text'] ?? '';
 
-                        // 分岐処理
-                        if (str_contains($userMessage, '価格')) {
-                            // $this->replyPriceQuery($event);
-                            // $this->replyPriceMessage($event,$userMessage);
-                            // 商品価格を返信するロジック
-                            $this->replyPriceMessage($replyToken, $userMessage);
-                        } elseif (str_contains($userMessage, '問い合わせ')) {
-                            // $this->replyNormalQuery($event);
-                            $this->replyNormalMessage($event);
-                        } else {
-                            $this->replyDefault($event);
+                        // 2. Flexメッセージの作成
+                        $hero = ImageComponentBuilder::builder()
+                            ->setUrl('https://developers-resource.landpress.line.me/fx/img/01_1_cafe.png')
+                            ->setSize('full')
+                            ->setAspectRatio('20:13')
+                            ->setAspectMode('cover')
+                            ->setAction(
+                                new UriTemplateActionBuilder(
+                                    'Open URL',
+                                    'https://line.me/'
+                                )
+                            );
+
+                        $stars = [];
+                        for ($i = 0; $i < 4; $i++) {
+                            $stars[] = IconComponentBuilder::builder()
+                                ->setSize('sm')
+                                ->setUrl('https://developers-resource.landpress.line.me/fx/img/review_gold_star_28.png');
                         }
-            
+                        $stars[] = IconComponentBuilder::builder()
+                            ->setSize('sm')
+                            ->setUrl('https://developers-resource.landpress.line.me/fx/img/review_gray_star_28.png');
+                        $stars[] = TextComponentBuilder::builder()
+                            ->setText('4.0')
+                            ->setSize('sm')
+                            ->setColor('#999999')
+                            ->setMargin(ComponentMargin::MD)
+                            ->setFlex(0);
+
+                        $ratingBox = BoxComponentBuilder::builder()
+                            ->setLayout(ComponentLayout::BASELINE)
+                            ->setMargin(ComponentMargin::MD)
+                            ->setContents($stars);
+
+                        $infoContents = [
+                            BoxComponentBuilder::builder()
+                                ->setLayout(ComponentLayout::BASELINE)
+                                ->setSpacing(ComponentSpacing::SM)
+                                ->setContents([
+                                    TextComponentBuilder::builder()
+                                        ->setText('Place')
+                                        ->setColor('#aaaaaa')
+                                        ->setSize('sm')
+                                        ->setFlex(1),
+                                    TextComponentBuilder::builder()
+                                        ->setText('Flex Tower, 7-7-4 Midori-ku, Tokyo')
+                                        ->setWrap(true)
+                                        ->setColor('#666666')
+                                        ->setSize('sm')
+                                        ->setFlex(5),
+                                ]),
+                            BoxComponentBuilder::builder()
+                                ->setLayout(ComponentLayout::BASELINE)
+                                ->setSpacing(ComponentSpacing::SM)
+                                ->setContents([
+                                    TextComponentBuilder::builder()
+                                        ->setText('Time')
+                                        ->setColor('#aaaaaa')
+                                        ->setSize('sm')
+                                        ->setFlex(1),
+                                    TextComponentBuilder::builder()
+                                        ->setText('10:00 - 23:00')
+                                        ->setWrap(true)
+                                        ->setColor('#666666')
+                                        ->setSize('sm')
+                                        ->setFlex(5),
+                                ]),
+                        ];
+
+                        $infoBox = BoxComponentBuilder::builder()
+                            ->setLayout(ComponentLayout::VERTICAL)
+                            ->setMargin(ComponentMargin::LG)
+                            ->setSpacing(ComponentSpacing::SM)
+                            ->setContents($infoContents);
+
+                        $body = BoxComponentBuilder::builder()
+                            ->setLayout(ComponentLayout::VERTICAL)
+                            ->setContents([
+                                TextComponentBuilder::builder()
+                                    ->setText('Brown Cafe')
+                                    ->setWeight('bold')
+                                    ->setSize('xl'),
+                                $ratingBox,
+                                $infoBox,
+                            ]);
+
+                        $footer = BoxComponentBuilder::builder()
+                            ->setLayout(ComponentLayout::VERTICAL)
+                            ->setSpacing(ComponentSpacing::SM)
+                            ->setContents([
+                                ButtonComponentBuilder::builder()
+                                    ->setStyle('link')
+                                    ->setHeight(ComponentButtonHeight::SM)
+                                    ->setAction(
+                                        new UriTemplateActionBuilder(
+                                            'CALL',
+                                            'https://line.me/'
+                                        )
+                                    ),
+                                ButtonComponentBuilder::builder()
+                                    ->setStyle('link')
+                                    ->setHeight(ComponentButtonHeight::SM)
+                                    ->setAction(
+                                        new UriTemplateActionBuilder(
+                                            'WEBSITE',
+                                            'https://line.me/'
+                                        )
+                                    ),
+                            ]);
+
+                        $bubble = BubbleContainerBuilder::builder()
+                            ->setHero($hero)
+                            ->setBody($body)
+                            ->setFooter($footer);
+
+                        $flexMessage = FlexMessageBuilder::builder()
+                            ->setAltText('This is a Flex Message')
+                            ->setContents($bubble);
+
+                        // // 3. ユーザーID（送信先）を設定（例: $request->input('userId')で受け取る）
+                        // // $userId = $request->input('userId'); // 例: POSTリクエストから取得
+                        // ↑に $userId = $event['source']['userId']; // 例: POSTリクエストから取得
+
+                        // 4. Flexメッセージを送信
+                        $response = $bot->pushMessage($userId, $flexMessage);
+
                         Log::info('LineWebhookController message $userMessage = ' . print_r($userMessage, true));
+
+                        // 5. レスポンスの確認
+                        if ($response->isSucceeded()) {
+                            Log::info('LineWebhookController response Reply succeeded: = ' . print_r($response->getHTTPStatus(), true));
+                            Log::info('LineWebhookController message END');
+                            return response()->json(['message' => 'Message sent successfully!']);
+                        } else {
+                            Log::info('LineWebhookController response Reply failed:   = ' . print_r($response->getRawBody(), true));
+                            Log::info('LineWebhookController response Access Token:   = ' . print_r($this->accessToken, true));
+                            Log::info('LineWebhookController response HTTP Status:    = ' . print_r($response->getHTTPStatus(), true));
+                            Log::info('LineWebhookController response Error Message:  = ' . print_r($response->getRawBody(), true));
+                            Log::info('LineWebhookController message END');
+                            return response()->json([
+                                'message' => 'Failed to send message',
+                                'details' => $response->getRawBody(),
+                            ], 500);
+                        }
 
                         break;
                     case 'image':
