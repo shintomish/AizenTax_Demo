@@ -46,8 +46,8 @@ class Kernel extends ConsoleKernel
         $schedule->command('backup:run --only-db')      // DBのみのバックアップにはオプション「–only-db」を指定します。
                  ->dailyAt('05:00');                    // 毎日AM5:00に実行する
 
-        $schedule->command('command:File90Delete')      // userdata配下の120日経過したファイルを削除
-                 ->weeklyOn(0, '05:10');                // 毎週日曜日(0)AM5:10に実行する
+        // $schedule->command('command:File90Delete')      // userdata配下の120日経過したファイルを削除
+        //          ->weeklyOn(0, '05:10');                // 毎週日曜日(0)AM5:10に実行する
                 //  ->dailyAt('15:35');                 // 毎日AM4:20に実行する
 
         $schedule->command('backup:run')
