@@ -20,6 +20,7 @@
         "linecorp/line-bot-sdk": "7.*",
         "maatwebsite/excel": "3.1.48",
         "pusher/pusher-php-server": "^7.2",
+        "spatie/laravel-backup": "^8.0",
         "stechstudio/laravel-zipstream": "^4.8"
     },
     "require-dev": {
