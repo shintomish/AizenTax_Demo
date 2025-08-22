@@ -1,0 +1,11 @@
+# version: '3.8'
+
+services:
+  laravel.test:
+    # Windows側の bind mount は消して Mutagen の volume を使う
+    volumes:
+      - ~/act100:/var/www/html:cached
+
+volumes:
+  mutagen-sync:
+    external: true
