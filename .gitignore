@@ -1,1 +1,40 @@
 “mail_attachments/”
+/.phpunit.cache
+/node_modules
+/public/build
+/public/hot
+/public/storage
+/storage/*.key
+/vendor
+.env
+.env.backup
+.env.production
+.phpunit.result.cache
+Homestead.json
+Homestead.yaml
+auth.json
+npm-debug.log
+yarn-error.log
+/.fleet
+/.idea
+/.vscode
+
+# キャッシュやビルド成果物
+/vendor/
+/node_modules/
+/storage/framework/cache/*
+/storage/framework/sessions/*
+/storage/framework/views/*
+/bootstrap/cache/*
+
+# OS / エディタの不要ファイル
+.DS_Store
+Thumbs.db
+*.log
+
+# その他生成物
+*.xlsx
+*.zip
+*.gz
+
+/build/
