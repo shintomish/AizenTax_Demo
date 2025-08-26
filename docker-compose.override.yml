@@ -15,6 +15,8 @@ services:
       - laravel.test
     volumes:
       - ./:/var/www/html
+      - ./storage:/var/www/html/storage
+      - ./bootstrap/cache:/var/www/html/bootstrap/cache
     user: "${WWWUSER}:${WWWGROUP}"   # ← これを追加！
     entrypoint: |
       bash -c 'while true; do
@@ -22,6 +24,8 @@ services:
         php artisan schedule:run >> /var/www/html/storage/logs/scheduler-$(date +\%F).log 2>&1
         sleep 60
       done'
+    networks:
+      - sail
 
   mysql:
     ports:
@@ -31,3 +35,7 @@ volumes:
   mutagen-sync:
     external: true
 
+networks:
+  sail:
+    external: true
+    name: act100_sail
