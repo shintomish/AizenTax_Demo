@@ -19,8 +19,17 @@ class HttpFile extends File
     {
         $headers = $this->getHeaders();
 
+        if (!array_key_exists(self::HEADER_CONTENT_LENGTH, $headers)) {
+            return false;
+        }
+
+        if(is_array($headers[self::HEADER_CONTENT_LENGTH])){
+            return end($headers[self::HEADER_CONTENT_LENGTH]);
+        }
+
         return $headers[self::HEADER_CONTENT_LENGTH];
     }
+
 
     /**
      * @return StreamInterface
@@ -44,7 +53,7 @@ class HttpFile extends File
      */
     public function canPredictZipDataSize(): bool
     {
-        return array_key_exists(self::HEADER_CONTENT_LENGTH, $this->getHeaders()) &&
+        return (is_int($this->filesize) || array_key_exists(self::HEADER_CONTENT_LENGTH, $this->getHeaders())) &&
             parent::canPredictZipDataSize();
     }
 

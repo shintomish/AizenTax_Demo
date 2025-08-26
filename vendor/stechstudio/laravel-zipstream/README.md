@@ -112,6 +112,19 @@ Zip::create("package.zip")
     ->add("s3://bucket-name/path/to/object.pdf", "Something.pdf");
 ```
 
+By default, this package will try to create an S3 client using the same .env file credentials that Laravel uses. If needed, you can wire up a custom S3 client to the `zipstream.s3client` container key. Or you can even pass in your own S3 client when adding a file to the zip. To do this, you'll need to create an `S3File` model instance yourself so that you can provide the client, like this:
+
+```php
+use STS\ZipStream\Models\S3File;
+
+// Create your own client however necessary
+$s3 = new Aws\S3\S3Client();
+
+Zip::create("package.zip")->add(
+    S3File::make("s3://bucket-name/path/to/object.pdf")->setS3Client($s3)
+);
+```
+
 ## Zip size prediction
 
 By default this package attempts to predict the final zip size and sends a `Content-Length` header up front. This means users will see accurate progress on their download, even though the zip is being streamed out as it is created!
@@ -119,6 +132,27 @@ By default this package attempts to predict the final zip size and sends a `Cont
 This only works if files are not compressed.
 
 If you have issues with the zip size prediction you can disable it with `ZIPSTREAM_PREDICT_SIZE=false` in your .env file.
+
+## Specify your own filesizes
+
+It can be expensive retrieving filesizes for some file sources such as S3 or HTTP. These require dedicated calls, and can add up to a lot of time if you are zipping up many files. If you store filesizes in your database and have them available, you can drastically improve performance by providing filesizes when you add files. You'll need to make your own File models instead of adding paths directly to the zip.
+
+Let's say you have a collection of Eloquent `$files`, are looping through and building a zip. If you have a `filesize` attribute available, it would look something like this:
+
+```php
+use STS\ZipStream\Models\File;
+
+// Retrieve file records from the database
+$files = ...;
+
+$zip = Zip::create("package.zip");
+
+foreach($files AS $file) {
+    $zip->add(
+        File::make($file->path, $file->name)->setFilesize($file->size)
+    );
+}
+```
 
 ## Configure compression
 
@@ -168,6 +202,16 @@ You might use an internal DB id for your cache name, so that the next time a use
 - `STS\ZipStream\Events\ZipStreaming`: Dispatched when a new zip stream begins processing
 - `STS\ZipStream\Events\ZipStreamed`: Dispatched when a zip finishes streaming
 - `STS\ZipStream\Events\ZipSizePredictionFailed`: Fired if the predicted filesize doesn't match the final size. If you have filesize prediction enabled it's a good idea to listen for this event and log it, since that might mean the zip download failed or was corrupt for your user. 
+
+## Filename sanitization
+
+By default this package will try to translate any non-ascii character in filename or folder's name to ascii. For example, if your filename is `中文_にほんご_Ч_Ɯ_☺_someascii.txt`. It will become `__C___someascii.txt` using Laravel's `Str::ascii($path)`.
+
+If you need to preserve non-ascii characters, you can disable this feature with an `.env` setting:
+
+```env
+ZIPSTREAM_FILE_SANITIZE=false
+```
 
 ## License
 

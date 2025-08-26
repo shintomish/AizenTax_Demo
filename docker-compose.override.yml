@@ -2,10 +2,32 @@
 
 services:
   laravel.test:
-    # Windows側の bind mount は消して Mutagen の volume を使う
     volumes:
-      - ~/act100:/var/www/html:cached
+      - ./:/var/www/html
+
+  cron:
+    build:
+      context: ./vendor/laravel/sail/runtimes/8.2
+      args:
+        WWWGROUP: '${WWWGROUP}'
+        WWWUSER: '${WWWUSER}'
+    depends_on:
+      - laravel.test
+    volumes:
+      - ./:/var/www/html
+    user: "${WWWUSER}:${WWWGROUP}"   # ← これを追加！
+    entrypoint: |
+      bash -c 'while true; do
+        cd /var/www/html
+        php artisan schedule:run >> /var/www/html/storage/logs/scheduler-$(date +\%F).log 2>&1
+        sleep 60
+      done'
+
+  mysql:
+    ports:
+      - "3308:3306"
 
 volumes:
   mutagen-sync:
     external: true
+

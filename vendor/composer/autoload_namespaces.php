@@ -6,7 +6,6 @@ $vendorDir = dirname(dirname(__FILE__));
 $baseDir = dirname($vendorDir);
 
 return array(
-    'Mockery' => array($vendorDir . '/mockery/mockery/library'),
     'HTMLPurifier' => array($vendorDir . '/ezyang/htmlpurifier/library'),
     'Flow' => array($vendorDir . '/flowjs/flow-php-server/src'),
 );
