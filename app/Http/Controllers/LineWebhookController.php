@@ -81,7 +81,9 @@ class LineWebhookController extends Controller
         $userId = $event['source']['userId'];
         Log::info("Follow event received for userId = $userId");
 
-        $message = "友だち追加ありがとうございます！";
+        // 友だち追加ありがとうございます！
+        $message = "① お子様のフルネーム\n\n"
+                ."メッセージを確認して担当者から順次返信します。";
         $this->pushMessage($userId, $message);
     }
 
