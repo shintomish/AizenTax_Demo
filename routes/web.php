@@ -1,5 +1,6 @@
 <?php
 namespace App\Http\Controllers;
+use App\Http\Controllers\LineWebhookController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -275,7 +276,10 @@ Route::get('annualupdate/update', 'App\Http\Controllers\AnnualupdateController@u
 //-----------------------------------------------------------------------------------------------
 //- LINE Webhook LINEからLine_Trial_Userに登録
 //-----------------------------------------------------------------------------------------------
-Route::post('/line/webhook/message', 'App\Http\Controllers\LineWebhookController@message')->name('line.webhook.message');
+// Route::post('/line/webhook/message', 'App\Http\Controllers\LineWebhookController@message')->name('line.webhook.message');
+// Route::post('/line/webhook', [LineWebhookController::class, 'webhook']);
+Route::post('/line/webhook/message', 'App\Http\Controllers\LineWebhookController@webhook')->name('line.webhook.message');
+// Route::post('/line/webhook', [LineWebhookController::class, 'webhook']);
 
 //-----------------------------------------------------------------------------------------------
 //- LINE LineTrialUserController
@@ -307,4 +311,34 @@ Route::prefix('announcement')->middleware('auth')->group(function(){
     Route::get('/{announcement}', [AnnouncementController::class, 'show'])->name('announcement.show');
 
 });
+
+
+use LINE\LINEBot;
+use LINE\LINEBot\HTTPClient\CurlHTTPClient;
+use LINE\LINEBot\MessageBuilder\TextMessageBuilder;
+use Illuminate\Support\Facades\Log;
+
+Route::get('/test-line', function () {
+    $httpClient = new CurlHTTPClient(env('LINE_CHANNEL_ACCESS_TOKEN'));
+    $bot = new LINEBot($httpClient, [
+        'channelSecret' => env('LINE_CHANNEL_SECRET'),
+    ]);
+
+    // テスト対象の userId（自分のLINEアカウント）
+    $userId = 'U4d15b647d8b8effec85ca24ddbbd6674';
+
+    $response = $bot->pushMessage($userId, new TextMessageBuilder('テスト送信です'));
+
+    Log::debug("Sending push/reply", [
+    'userId' => $userId,
+    'replyToken' => $event['replyToken'] ?? null,
+    'message' => 'テスト送信',
+    ]);
+    
+    return response()->json([
+        'status' => $response->getHTTPStatus(),
+        'body'   => $response->getRawBody(),
+    ]);
+});
+
 ?>

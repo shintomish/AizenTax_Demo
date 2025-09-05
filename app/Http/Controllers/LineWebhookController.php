@@ -3,414 +3,128 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-// use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
-
 use App\Models\Line_Message;
-// use App\Models\Line_Trial_Users;
-
+use App\Models\Line_Trial_Users;
 use LINE\LINEBot;
 use LINE\LINEBot\HTTPClient\CurlHTTPClient;
-use LINE\LINEBot\MessageBuilder\FlexMessageBuilder;
-use LINE\LINEBot\TemplateActionBuilder\UriTemplateActionBuilder;
-use LINE\LINEBot\MessageBuilder\Flex\ContainerBuilder\BubbleContainerBuilder;
-use LINE\LINEBot\MessageBuilder\Flex\ComponentBuilder\BoxComponentBuilder;
-use LINE\LINEBot\MessageBuilder\Flex\ComponentBuilder\TextComponentBuilder;
-use LINE\LINEBot\MessageBuilder\Flex\ComponentBuilder\ImageComponentBuilder;
-use LINE\LINEBot\MessageBuilder\Flex\ComponentBuilder\ButtonComponentBuilder;
-use LINE\LINEBot\MessageBuilder\Flex\ComponentBuilder\IconComponentBuilder;
-use LINE\LINEBot\Constant\Flex\ComponentLayout;
-use LINE\LINEBot\Constant\Flex\ComponentMargin;
-use LINE\LINEBot\Constant\Flex\ComponentSpacing;
-use LINE\LINEBot\Constant\Flex\ComponentButtonHeight;
+use LINE\LINEBot\MessageBuilder\TextMessageBuilder;
 
 class LineWebhookController extends Controller
 {
-    private $bot;
-    private $channelToken;
+    protected $bot;
 
     public function __construct()
     {
-        // 1. LINE Bot SDKの初期化
-        $this->channelToken = env('LINE_MESSAGE_CHANNEL_TOKEN');
+        $httpClient = new CurlHTTPClient(config('services.line.message.channel_token'));
+        $this->bot = new LINEBot($httpClient, [
+            'channelSecret' => config('services.line.message.channel_secret'),
+        ]);
     }
 
-    //
-    public function message(Request $request) {
+    public function webhook(Request $request)
+    {
+        $events = $request->input('events', []);
 
-        Log::info('LineWebhookController message START');
-
-        $httpClient = new CurlHTTPClient(env('LINE_CHANNEL_ACCESS_TOKEN'));
-        $bot = new LINEBot($httpClient, ['channelSecret' => env('LINE_CHANNEL_SECRET')]);
-
-        $events = $request->events;
-        
         foreach ($events as $event) {
-            // 3. ユーザーID（送信先）を設定（例: $request->input('userId')で受け取る）
-            // $userId = $request->input('userId'); // 例: POSTリクエストから取得
-            $userId = $event['source']['userId']; // 例: POSTリクエストから取得
+            switch ($event['type']) {
+                case 'follow':
+                    $this->handleFollowEvent($event);
+                    break;
 
-            if (isset($event['message']['type'])) {
-                switch ($event['message']['type']) {
-                    case 'text':
-                        // Log::info('LineWebhookController message case text userId = ' . print_r($event['source']['userId'], true));
+                case 'message':
+                    $this->handleMessageEvent($event);
+                    break;
 
-                        $replyToken = $event['replyToken'];
-                        $userMessage = $event['message']['text'] ?? '';
-
-                        // 2. Flexメッセージの作成
-                        $hero = ImageComponentBuilder::builder()
-                            ->setUrl('https://developers-resource.landpress.line.me/fx/img/01_1_cafe.png')
-                            ->setSize('full')
-                            ->setAspectRatio('20:13')
-                            ->setAspectMode('cover')
-                            ->setAction(
-                                new UriTemplateActionBuilder(
-                                    'Open URL',
-                                    'https://line.me/'
-                                )
-                            );
-
-                        $stars = [];
-                        for ($i = 0; $i < 4; $i++) {
-                            $stars[] = IconComponentBuilder::builder()
-                                ->setSize('sm')
-                                ->setUrl('https://developers-resource.landpress.line.me/fx/img/review_gold_star_28.png');
-                        }
-                        $stars[] = IconComponentBuilder::builder()
-                            ->setSize('sm')
-                            ->setUrl('https://developers-resource.landpress.line.me/fx/img/review_gray_star_28.png');
-                        $stars[] = TextComponentBuilder::builder()
-                            ->setText('4.0')
-                            ->setSize('sm')
-                            ->setColor('#999999')
-                            ->setMargin(ComponentMargin::MD)
-                            ->setFlex(0);
-
-                        $ratingBox = BoxComponentBuilder::builder()
-                            ->setLayout(ComponentLayout::BASELINE)
-                            ->setMargin(ComponentMargin::MD)
-                            ->setContents($stars);
-
-                        $infoContents = [
-                            BoxComponentBuilder::builder()
-                                ->setLayout(ComponentLayout::BASELINE)
-                                ->setSpacing(ComponentSpacing::SM)
-                                ->setContents([
-                                    TextComponentBuilder::builder()
-                                        ->setText('Place')
-                                        ->setColor('#aaaaaa')
-                                        ->setSize('sm')
-                                        ->setFlex(1),
-                                    TextComponentBuilder::builder()
-                                        ->setText('Flex Tower, 7-7-4 Midori-ku, Tokyo')
-                                        ->setWrap(true)
-                                        ->setColor('#666666')
-                                        ->setSize('sm')
-                                        ->setFlex(5),
-                                ]),
-                            BoxComponentBuilder::builder()
-                                ->setLayout(ComponentLayout::BASELINE)
-                                ->setSpacing(ComponentSpacing::SM)
-                                ->setContents([
-                                    TextComponentBuilder::builder()
-                                        ->setText('Time')
-                                        ->setColor('#aaaaaa')
-                                        ->setSize('sm')
-                                        ->setFlex(1),
-                                    TextComponentBuilder::builder()
-                                        ->setText('10:00 - 23:00')
-                                        ->setWrap(true)
-                                        ->setColor('#666666')
-                                        ->setSize('sm')
-                                        ->setFlex(5),
-                                ]),
-                        ];
-
-                        $infoBox = BoxComponentBuilder::builder()
-                            ->setLayout(ComponentLayout::VERTICAL)
-                            ->setMargin(ComponentMargin::LG)
-                            ->setSpacing(ComponentSpacing::SM)
-                            ->setContents($infoContents);
-
-                        $body = BoxComponentBuilder::builder()
-                            ->setLayout(ComponentLayout::VERTICAL)
-                            ->setContents([
-                                TextComponentBuilder::builder()
-                                    ->setText('Brown Cafe')
-                                    ->setWeight('bold')
-                                    ->setSize('xl'),
-                                $ratingBox,
-                                $infoBox,
-                            ]);
-
-                        $footer = BoxComponentBuilder::builder()
-                            ->setLayout(ComponentLayout::VERTICAL)
-                            ->setSpacing(ComponentSpacing::SM)
-                            ->setContents([
-                                ButtonComponentBuilder::builder()
-                                    ->setStyle('link')
-                                    ->setHeight(ComponentButtonHeight::SM)
-                                    ->setAction(
-                                        new UriTemplateActionBuilder(
-                                            'CALL',
-                                            'https://line.me/'
-                                        )
-                                    ),
-                                ButtonComponentBuilder::builder()
-                                    ->setStyle('link')
-                                    ->setHeight(ComponentButtonHeight::SM)
-                                    ->setAction(
-                                        new UriTemplateActionBuilder(
-                                            'WEBSITE',
-                                            'https://line.me/'
-                                        )
-                                    ),
-                            ]);
-
-                        $bubble = BubbleContainerBuilder::builder()
-                            ->setHero($hero)
-                            ->setBody($body)
-                            ->setFooter($footer);
-
-                        $flexMessage = FlexMessageBuilder::builder()
-                            ->setAltText('This is a Flex Message')
-                            ->setContents($bubble);
-
-                        // // 3. ユーザーID（送信先）を設定（例: $request->input('userId')で受け取る）
-                        // // $userId = $request->input('userId'); // 例: POSTリクエストから取得
-                        // ↑に $userId = $event['source']['userId']; // 例: POSTリクエストから取得
-
-                        // 4. Flexメッセージを送信
-                        $response = $bot->pushMessage($userId, $flexMessage);
-
-                        Log::info('LineWebhookController message $userMessage = ' . print_r($userMessage, true));
-
-                        // 5. レスポンスの確認
-                        if ($response->isSucceeded()) {
-                            Log::info('LineWebhookController response Reply succeeded: = ' . print_r($response->getHTTPStatus(), true));
-                            Log::info('LineWebhookController message END');
-                            return response()->json(['message' => 'Message sent successfully!']);
-                        } else {
-                            Log::info('LineWebhookController response Reply failed:   = ' . print_r($response->getRawBody(), true));
-                            Log::info('LineWebhookController response Access Token:   = ' . print_r($this->accessToken, true));
-                            Log::info('LineWebhookController response HTTP Status:    = ' . print_r($response->getHTTPStatus(), true));
-                            Log::info('LineWebhookController response Error Message:  = ' . print_r($response->getRawBody(), true));
-                            Log::info('LineWebhookController message END');
-                            return response()->json([
-                                'message' => 'Failed to send message',
-                                'details' => $response->getRawBody(),
-                            ], 500);
-                        }
-
-                        break;
-                    case 'image':
-                        break;
-                        // スタンプが送信された場合
-                    case 'sticker':
-                        break;
-                    default :
-                        Log::info('LineWebhookController message case default userId = ' . print_r($event['source']['userId'], true));
-                        break;
-                }
+                default:
+                    Log::info('Unhandled event type: ' . $event['type']);
+                    break;
             }
         }
 
-        Log::info('LineWebhookController message END');
-        // return 'ok';
         return response()->json(['status' => 'success']);
     }
 
-
-    private function replyPriceQuery($replyToken)
+    // 共通：reply
+    protected function replyMessage(string $replyToken, string $text): bool
     {
-        Log::info('LineWebhookController replyPriceQuery START');
-
-        // $replyToken = $event['replyToken'];
-
-        $flexMessage = new FlexMessageBuilder('商品価格リスト', [
-            'type' => 'bubble',
-            'body' => [
-                'type' => 'box',
-                'layout' => 'vertical',
-                'contents' => [
-                    [
-                        'type' => 'text',
-                        'text' => '価格リスト',
-                        'weight' => 'bold',
-                        'size' => 'xl'
-                    ],
-                    [
-                        'type' => 'box',
-                        'layout' => 'vertical',
-                        'margin' => 'lg',
-                        'spacing' => 'sm',
-                        'contents' => [
-                            [
-                                'type' => 'text',
-                                'text' => '商品A: ¥1,000'
-                            ],
-                            [
-                                'type' => 'text',
-                                'text' => '商品B: ¥2,000'
-                            ]
-                        ]
-                    ]
-                ]
-            ]
-        ]);
-
-        Log::info('LineWebhookController replyPriceQuery END');
-        // $this->bot->replyMessage($replyToken, $flexMessage);
-        $this->bot->pushMessage($replyToken, $flexMessage);
-    }
-
-    private function replyNormalQuery($event)
-    {
-        Log::info('LineWebhookController replyNormalQuery START');
-
-        $replyToken = $event['replyToken'];
-
-        $buttonTemplate = new ButtonTemplateBuilder(
-            'お問い合わせ',
-            'お問い合わせ内容を選択してください。',
-            'https://example.com/image.png',
-            [
-                new MessageTemplateActionBuilder('営業時間', '営業時間を教えてください'),
-                new MessageTemplateActionBuilder('場所', '店舗の場所を教えてください')
-            ]
+        $response = $this->bot->replyMessage(
+            $replyToken,
+            new TextMessageBuilder($text)
         );
 
-        $yes_button = new PostbackTemplateActionBuilder('はい', 'button=1');
-        $no_button = new PostbackTemplateActionBuilder('キャンセル', 'button=0');
-        $actions = [$yes_button, $no_button];
-        $button = new ButtonTemplateBuilder('お問い合わせ', 'テキスト', '', $actions);
-
-        $button_message = new TemplateMessageBuilder('お問い合わせ', $buttonTemplate);
-
-        Log::info('LineWebhookController replyNormalQuery END');
-
-        // $this->bot->replyMessage($replyToken, $button_message);
-        // $this->bot->pushMessage($replyToken, $button_message);
-        $this->sendReplyMessage($replyToken, $button_message);
+        if (!$response->isSucceeded()) {
+            Log::warning("Reply failed: " . $response->getRawBody());
+            return false;
+        }
+        return true;
     }
 
-    private function replyDefault($event)
+    // 共通：push
+    protected function pushMessage(string $userId, string $text): bool
     {
-        Log::info('LineWebhookController replyDefault START');
+        $response = $this->bot->pushMessage(
+            $userId,
+            new TextMessageBuilder($text)
+        );
 
-        $replyToken = $event['replyToken'];
-        $message = new TextMessageBuilder('申し訳ありませんが、そのリクエストには対応できません。');
-
-        Log::info('LineWebhookController replyDefault END');
-
-        $this->bot->replyMessage($replyToken, $message);        //OKだが resなし
-        // $this->bot->pushMessage($replyToken, $message);      //OKだが resなし
-        // $this->bot->replyText($replyToken, $message);        //OKだが resなし
+        if (!$response->isSucceeded()) {
+            Log::error("Push failed: " . $response->getRawBody());
+            return false;
+        }
+        return true;
     }
 
-
-    private function replyPriceMessage($replyToken, $userMessage)
+    // フォローイベント処理
+    private function handleFollowEvent(array $event)
     {
-        Log::info('LineWebhookController replyPriceMessage START');
+        $userId = $event['source']['userId'];
+        Log::info("Follow event received for userId = $userId");
 
-        // 商品名を抽出 (例: "価格 シャンプー")
-        $productName = str_replace('価格 ', '', $userMessage);
-        $price = $this->getPriceByProductName($productName);
-
-        $flexMessage = [
-            'type' => 'flex',
-            'altText' => '価格情報',
-            'contents' => [
-                'type' => 'bubble',
-                'body' => [
-                    'type' => 'box',
-                    'layout' => 'vertical',
-                    'contents' => [
-                        [
-                            'type' => 'text',
-                            'text' => "商品名: $productName",
-                            'weight' => 'bold',
-                            'size' => 'xl',
-                        ],
-                        [
-                            'type' => 'text',
-                            'text' => "価格: ¥$price",
-                            'size' => 'md',
-                            'color' => '#555555',
-                        ],
-                    ],
-                ],
-            ],
-        ];
-        Log::info('LineWebhookController replyPriceMessage END');
-
-        // $bot->replyText($replyToken, $flexMessage);
-        $this->sendReplyMessage($replyToken, $flexMessage);
+        $message = "友だち追加ありがとうございます！";
+        $this->pushMessage($userId, $message);
     }
 
-    private function replyNormalMessage($replyToken)
+    // メッセージイベント処理
+    private function handleMessageEvent(array $event)
     {
-        Log::info('LineWebhookController replyNormalMessage START');
-        $buttonsTemplate = [
-            'type' => 'template',
-            'altText' => '問い合わせメニュー',
-            'template' => [
-                'type' => 'buttons',
-                // 'thumbnailImageUrl' => 'https://example.com/image.jpg',
-                'title' => 'お問い合わせ',
-                'text' => '選択してください',
-                'actions' => [
-                    [
-                        'type' => 'message',
-                        'label' => '価格問い合わせ',
-                        'text' => '価格'
-                    ],
-                    [
-                        'type' => 'message',
-                        'label' => 'その他問い合わせ',
-                        'text' => 'その他'
-                    ],
-                ],
-            ],
-        ];
-        Log::info('LineWebhookController replyNormalMessage END');
+        $replyToken   = $event['replyToken'] ?? null;
+        $userId       = $event['source']['userId'] ?? null;
+        $userMessage  = $event['message']['text'] ?? '';
 
-        $this->bot->replyText($replyToken, $buttonsTemplate);
-        // $this->sendReplyMessage($replyToken, $buttonsTemplate);     //the request body is invalid
+        Log::info("Message event received from userId = $userId, message = $userMessage");
+
+        // DB 保存
+        $line_message = new Line_Message();
+        $line_message->line_user_id    = $userId;
+        $line_message->line_message_id = $event['message']['id'];
+        $line_message->text            = $userMessage;
+        $line_message->save();
+
+        // 新規ユーザーなら登録
+        $userCount = Line_Trial_Users::where('line_user_id', $userId)->count();
+        if ($userCount == 0) {
+            $trial_user = new Line_Trial_Users();
+            $trial_user->line_user_id = $userId;
+            $trial_user->users_name   = $userMessage;
+            $trial_user->save();
+
+            $msg = "体験会ご予約承りました。\n\n"
+                . "体験会ブースにお越し頂いてから、\n"
+                . "ご希望の予約時間を登録致します。";
+
+            if (!$this->replyMessage($replyToken, $msg)) {
+                // reply が失敗した場合は push に切り替える
+                $this->pushMessage($userId, $msg);
+            }
+        } else {
+            $msg = "メッセージを受け取りました: \n\n $userMessage";
+
+            if (!$this->replyMessage($replyToken, $msg)) {
+                $this->pushMessage($userId, $msg);
+            }
+        }
+
+        Log::info("Message event processing finished for userId = $userId");
     }
-
-    private function getPriceByProductName($productName)
-    {
-        // ダミー価格データ (本番ではデータベースやAPIを参照)
-        $prices = [
-            'シャンプー' => 1200,
-            'リンス' => 1500,
-            '美容液' => 3000,
-        ];
-        // return $prices[$productName] . " です。" ?? '未登録です。';
-        return $prices[$productName] . " です。" ?? '商品の価格が見つかりません。';
-
-    }
-
-    private function sendReplyMessage($replyToken, $message)
-    {
-        $client = new Client();
-        $url = 'https://api.line.me/v2/bot/message/reply';
-        $headers = [
-            'Authorization' => "Bearer {$this->channelToken}",
-            'Content-Type' => 'application/json',
-        ];
-        $body = [
-            'replyToken' => $replyToken,
-            'messages' => [$message],
-        ];
-        // Log::info('LineWebhookController sendReplyMessage $headers = ' . print_r($headers, true));
-
-        $client->post($url, [
-            'headers' => $headers,
-            'json' => $body,
-        ]);
-    }
-
 }
