@@ -44,6 +44,9 @@
             "Tests\\": "tests/"
         }
     },
+    "files": [
+        "app/Helpers/TimeExtractor.php"
+    ],
     "scripts": {
         "post-autoload-dump": [
             "Illuminate\\Foundation\\ComposerScripts::postAutoloadDump",
