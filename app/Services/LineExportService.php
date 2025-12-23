@@ -112,40 +112,41 @@ class LineExportService
         // putenv('HOME=/tmp'); // libreoffice の作業スペースとして tmp を使う
 
         $pdf_dir = storage_path('app/public/line/pdf');
-        // Log::debug('ExportService convertOfficeToPdf exec $pdf_dir = '    .print_r($pdf_dir,true));
-        // Log::debug('ExportService convertOfficeToPdf exec $foloder_name = '    .print_r($foloder_name,true));
-        // $office_path = './storage/app/public/line/xls/'. $foloder_name. '/'. $file_name. '.xlsx';
 
-        #  /usr/bin/soffice --headless --convert-to pdf --outdir {出力先のディレクトリ} {変換する元のExcel}
-        #  例) /tmp/sample.xls -> /tmp/sample.pdfに変換する場合
-        #  /usr/bin/soffice --headless --convert-to pdf --outdir /tmp /tmp/sample.xls
-        #  exec("export LANG=ja_JP.UTF-8 && /usr/bin/soffice --headless --convert-to pdf --outdir /tmp /tmp/sample.xls");
+Log::debug('ExportService convertOfficeToPdf exec $pdf_dir = '    .print_r($pdf_dir,true));
+Log::debug('pdf_dir file_exists = ' . (file_exists($pdf_dir) ? 'YES' : 'NO'));
 
         // $command_parts = [
-        //     'export HOME=/tmp;',
+        //     'HOME=/tmp;',
         //     '/usr/bin/soffice',
-        //     '--language=ja',
         //     '--headless',
-        //     '--convert-to pdf:writer_pdf_Export',
+        //     '--language=ja',
+        //     '--convert-to pdf',
         //     '--outdir '. $pdf_dir,
         //     $office_path
         // ];
-        $command_parts = [
-            'HOME=/tmp;',
-            '/usr/bin/soffice',
-            '--headless',
-            '--language=ja',
-            '--convert-to pdf',
-            '--outdir '. $pdf_dir,
-            $office_path
-        ];
-        $command = implode(' ', $command_parts);
+        // $command = implode(' ', $command_parts);
+        // exec($command, $output, $return_var);
+
+        // ★ HOME設定
+        putenv('HOME=/tmp');
+
+    // ★ bash 経由 & stderr取得
+    // $command = "bash -c '/usr/bin/soffice --headless --language=ja --convert-to pdf --outdir {$pdf_dir} {$office_path}' 2>&1";
+        $command = sprintf(
+            'HOME=/tmp /usr/bin/soffice --headless --language=ja --convert-to pdf --outdir %s %s 2>&1',
+            escapeshellarg($pdf_dir),
+            escapeshellarg($office_path)
+        );
+
+    // Log::debug('CMD: ' . $command);
         exec($command, $output, $return_var);
 
-        // Log::debug('ExportService convertOfficeToPdf exec $office_path = '    .print_r($office_path,true));
+    // Log::debug('RET: ' . $return_var);
+    // Log::debug('OUT: ' . print_r($output, true));
+
         Log::info('ExportService convertOfficeToPdf exec $return_var = ' .print_r($return_var,true));
 
-        // $filename = pathinfo($office_path, PATHINFO_FILENAME);
         $pdf_path = $pdf_dir . '/' . $file_name . '.pdf';
 
         Log::info('ExportService convertOfficeToPdf END');
