@@ -21,7 +21,8 @@ services:
         volumes:
             - '.:/var/www/html'
         networks:
-            - sail
+            sail:
+                # driver: bridge
         depends_on:
             - mysql
             - redis
